@@ -1,0 +1,67 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# ---- Data & Models ----
+data/
+datasets/
+models/
+*.h5
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.npz
+*.npy
+*.pickle
+*.pkl
+
+# ---- Logs ----
+*.log
+logs/
+wandb/
+
+# ---- OS Specific ----
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---- Docker ----
+*.pid
+*.seed
+*.pid.lock
+
+# ---- VSCode / IDE ----
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---- Streamlit/Gradio cache ----
+.streamlit/
+.gradio/
