@@ -32,10 +32,9 @@ models/
 *.pickle
 *.pkl
 
-# ---- Logs ----
-*.log
-logs/
-wandb/
+# ---- Vídeos ----
+videos_descargados/
+
 
 # ---- OS Specific ----
 # macOS
