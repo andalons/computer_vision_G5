@@ -17,9 +17,9 @@ class GlobalState:
     
     # Configuración de streaming
     stream_config: Dict[str, Any] = field(default_factory=lambda: {
-        'fps_limite': 15.0,
-        'factor_escala': 0.6,
-        'altura_minima': 640,
+        'fps_limit': 15.0,
+        'scale_factor': 0.6,
+        'min_height': 640,
         'delay_frames': 0.067
     })
     

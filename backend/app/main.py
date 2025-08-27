@@ -45,22 +45,24 @@ except ImportError as e:
     current_video_path = None
     video_info_global = None
     stream_config = {
-        'fps_limite': 15.0,
-        'factor_escala': 0.6,
-        'altura_minima': 640,
-        'delay_frames': 0.067
+        'fps_limit': 15.0,
+        'scale_factor': 0.6,
+        'min_height': 640,
+        'delay_frames': 0.067,
+        'delete_after_processing': True
     }
     
     class VideoRequest(BaseModel):
         url: str
-        factor_escala: float = 0.5
-        altura_minima: int = 640
-        fps_limite: float = 30.0
+        scale_factor: float = 0.5
+        min_height: int = 640
+        fps_limit: float = 30.0
         delay_frames: float = 0.033
+        delete_after_processing: bool = True  # Por defecto, eliminar después del procesamiento
 
-from .descargar_video import descargar_video
-from .analizar_video import obtener_info_completa_video
-from .procesar_video_local import generate_video_stream
+from .download_video import download_video
+from .analyze_video import get_complete_video_info
+from .process_local_video import generate_video_stream
 import uuid
 
 # Funciones de respaldo cuando no se usa el core
@@ -122,13 +124,13 @@ async def prepare_video(video_request: VideoRequest):
             video_path = generate_video_path_fallback(prefix="video")
             print(f'{get_system_message_fallback("downloading")}: {video_request.url}')
         
-        print(f'⚙️ Configuración: FPS={video_request.fps_limite}, Escala={video_request.factor_escala}')
+        print(f'⚙️ Configuración: FPS={video_request.fps_limit}, Escala={video_request.scale_factor}')
         
         # Descargar video
         loop = asyncio.get_event_loop()
         with ThreadPoolExecutor() as executor:
             success = await loop.run_in_executor(
-                executor, descargar_video, video_request.url, video_path
+                executor, download_video, video_request.url, video_path
             )
         
         if not success:
@@ -142,7 +144,7 @@ async def prepare_video(video_request: VideoRequest):
         # Obtener información
         with ThreadPoolExecutor() as executor:
             video_info = await loop.run_in_executor(
-                executor, obtener_info_completa_video, video_path
+                executor, get_complete_video_info, video_path
             )
         
         # Actualizar estado
@@ -150,10 +152,11 @@ async def prepare_video(video_request: VideoRequest):
             set_current_video_path(video_path)
             set_video_info(video_info)
             new_config = {
-                'fps_limite': video_request.fps_limite,
-                'factor_escala': video_request.factor_escala,
-                'altura_minima': video_request.altura_minima,
-                'delay_frames': video_request.delay_frames
+                'fps_limit': video_request.fps_limit,
+                'scale_factor': video_request.scale_factor,
+                'min_height': video_request.min_height,
+                'delay_frames': video_request.delay_frames,
+                'delete_after_processing': video_request.delete_after_processing
             }
             update_stream_config(new_config)
             current_config = get_stream_config()
@@ -162,10 +165,11 @@ async def prepare_video(video_request: VideoRequest):
             current_video_path = video_path
             video_info_global = video_info
             stream_config.update({
-                'fps_limite': video_request.fps_limite,
-                'factor_escala': video_request.factor_escala,
-                'altura_minima': video_request.altura_minima,
-                'delay_frames': video_request.delay_frames
+                'fps_limit': video_request.fps_limit,
+                'scale_factor': video_request.scale_factor,
+                'min_height': video_request.min_height,
+                'delay_frames': video_request.delay_frames,
+                'delete_after_processing': video_request.delete_after_processing
             })
             current_config = stream_config.copy()
         
@@ -211,10 +215,11 @@ async def get_stream():
     return StreamingResponse(
         generate_video_stream(
             video_path=video_path,
-            factor_escala=config.get('factor_escala', 0.5),
-            altura_minima=config.get('altura_minima', 640),
-            fps_limite=config.get('fps_limite', 30.0),
-            delay_frames=config.get('delay_frames', 0.033)
+            scale_factor=config.get('scale_factor', 0.5),
+            min_height=config.get('min_height', 640),
+            fps_limit=config.get('fps_limit', 30.0),
+            delay_frames=config.get('delay_frames', 0.033),
+            delete_after_processing=config.get('delete_after_processing', True)
         ),
         media_type="multipart/x-mixed-replace; boundary=frame",
         headers={

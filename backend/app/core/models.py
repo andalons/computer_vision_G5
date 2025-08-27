@@ -17,19 +17,19 @@ class VideoQuality(str, Enum):
 class VideoRequest(BaseModel):
     """Modelo para peticiones de procesamiento de video"""
     url: str = Field(..., description="URL del video a procesar")
-    factor_escala: float = Field(
+    scale_factor: float = Field(
         default=0.5, 
         ge=0.1, 
         le=1.0,
         description="Factor de escala para redimensionar (0.1-1.0)"
     )
-    altura_minima: int = Field(
+    min_height: int = Field(
         default=640,
         ge=240,
         le=2160,
         description="Altura mínima para aplicar redimensionamiento"
     )
-    fps_limite: float = Field(
+    fps_limit: float = Field(
         default=30.0,
         ge=1.0,
         le=60.0,
@@ -41,8 +41,12 @@ class VideoRequest(BaseModel):
         le=1.0,
         description="Delay en segundos entre frames"
     )
+    delete_after_processing: bool = Field(
+        default=True,
+        description="Si True, elimina el video después del procesamiento"
+    )
 
-    @validator('fps_limite')
+    @validator('fps_limit')
     def validate_fps(cls, v):
         """Validar que el FPS sea un valor razonable"""
         if v <= 0:
@@ -52,58 +56,58 @@ class VideoRequest(BaseModel):
     @validator('delay_frames', pre=True, always=True)
     def calculate_delay_from_fps(cls, v, values):
         """Calcular delay automáticamente basado en FPS si no se proporciona"""
-        if 'fps_limite' in values and values['fps_limite'] > 0:
-            return 1.0 / values['fps_limite']
+        if 'fps_limit' in values and values['fps_limit'] > 0:
+            return 1.0 / values['fps_limit']
         return v
 
 class VideoInfo(BaseModel):
     """Modelo para información detallada del video"""
-    ruta: str
-    nombre_archivo: str
-    ancho: int
-    alto: int
+    path: str
+    filename: str
+    width: int
+    height: int
     fps: float
     total_frames: int
-    duracion_segundos: float
-    duracion_minutos: float
-    duracion_horas: float
+    duration_seconds: float
+    duration_minutes: float
+    duration_hours: float
     codec: str
-    tamaño_bytes: int
-    tamaño_kb: float
-    tamaño_mb: float
-    tamaño_gb: float
-    resolucion: str
-    aspecto_ratio: float
+    size_bytes: int
+    size_kb: float
+    size_mb: float
+    size_gb: float
+    resolution: str
+    aspect_ratio: float
     bitrate_kbps: float
-    canales_color: int
-    tipo_color: str
-    calidad: Optional[VideoQuality] = None
+    color_channels: int
+    color_type: str
+    quality: Optional[VideoQuality] = None
 
-    @validator('calidad', pre=True, always=True)
+    @validator('quality', pre=True, always=True)
     def determine_quality(cls, v, values):
         """Determinar la calidad basada en la altura"""
-        if 'alto' not in values:
+        if 'height' not in values:
             return v
         
-        altura = values['alto']
-        if altura >= 2160:
+        height = values['height']
+        if height >= 2160:
             return VideoQuality.ULTRA_HD_4K
-        elif altura >= 1440:
+        elif height >= 1440:
             return VideoQuality.QHD_2K
-        elif altura >= 1080:
+        elif height >= 1080:
             return VideoQuality.FULL_HD
-        elif altura >= 720:
+        elif height >= 720:
             return VideoQuality.HD
-        elif altura >= 480:
+        elif height >= 480:
             return VideoQuality.SD
         else:
             return VideoQuality.LOW_RES
 
 class StreamConfig(BaseModel):
     """Configuración para streaming"""
-    fps_limite: float = Field(default=15.0, ge=1.0, le=60.0)
-    factor_escala: float = Field(default=0.6, ge=0.1, le=1.0)
-    altura_minima: int = Field(default=640, ge=240, le=2160)
+    fps_limit: float = Field(default=15.0, ge=1.0, le=60.0)
+    scale_factor: float = Field(default=0.6, ge=0.1, le=1.0)
+    min_height: int = Field(default=640, ge=240, le=2160)
     delay_frames: float = Field(default=0.067, ge=0.01, le=1.0)
 
 class ProcessingResponse(BaseModel):

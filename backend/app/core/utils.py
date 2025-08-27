@@ -55,13 +55,13 @@ def calculate_scaled_dimensions(
     Calcular dimensiones escaladas para un video
     
     Args:
-        original_width: Ancho original
-        original_height: Alto original
+        original_width: Original width
+        original_height: Original height
         scale_factor: Factor de escala (0.1-1.0)
         min_height: Altura mínima para aplicar escalado
     
     Returns:
-        Tupla con (nuevo_ancho, nuevo_alto, fue_redimensionado)
+        Tupla con (new_width, new_height, was_resized)
     """
     if original_height <= min_height:
         return original_width, original_height, False
@@ -89,7 +89,7 @@ def format_duration(seconds: float) -> str:
         return f"{hours:.1f}h"
 
 def format_file_size(bytes_size: int) -> str:
-    """Formatear tamaño de archivo en formato legible"""
+    """Format file size in readable format"""
     if bytes_size < 1024:
         return f"{bytes_size}B"
     elif bytes_size < 1024**2:

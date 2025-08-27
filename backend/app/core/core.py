@@ -67,13 +67,13 @@ class VideoAnalysisCore:
                 return False, "URL inválida o vacía"
             
             # Validar FPS si se proporciona
-            if 'fps_limite' in request_data:
-                if not validate_fps(request_data['fps_limite']):
+            if 'fps_limit' in request_data:
+                if not validate_fps(request_data['fps_limit']):
                     return False, "FPS debe estar entre 1 y 60"
             
             # Validar factor de escala si se proporciona
-            if 'factor_escala' in request_data:
-                if not validate_scale_factor(request_data['factor_escala']):
+            if 'scale_factor' in request_data:
+                if not validate_scale_factor(request_data['scale_factor']):
                     return False, "Factor de escala debe estar entre 0.1 y 1.0"
             
             # Intentar crear el modelo para validación completa
