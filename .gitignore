@@ -64,3 +64,6 @@ $RECYCLE.BIN/
 # ---- Streamlit/Gradio cache ----
 .streamlit/
 .gradio/
+
+# ---- Node modules ----
+node_modules/
