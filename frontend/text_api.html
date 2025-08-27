@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Análisis de vídeo</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .container { max-width: 900px; }
+            input, button { padding: 10px; margin: 5px; }
+            input[type="url"] { width: 500px; }
+            input[type="range"] { width: 200px; }
+            label { display: block; margin: 10px 0 5px 0; font-weight: bold; }
+            #videoStream { border: 2px solid #ddd; margin-top: 20px; max-width: 100%; }
+            .error { color: red; background: #ffe6e6; padding: 10px; margin: 10px 0; border-radius: 5px; }
+            .controls { background: #f0f8ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+            .status { background: #e8f5e8; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div id="infoProyecto" class="status" style="background:#e0eaff; margin-bottom:20px;"></div>
+            <h1>🎥 Análisis de Video</h1>
+            
+            <div class="controls">
+                <input type="url" id="videoUrl" placeholder="https://www.instagram.com/dulceida/reel/C2pBKGKiDSR/" 
+                       value="https://www.instagram.com/dulceida/reel/C2pBKGKiDSR/">
+                <br><br>
+                
+                <label for="fpsSlider">🎞️ FPS del Streaming: <span id="fpsValue">15</span></label>
+                <input type="range" id="fpsSlider" min="1" max="60" value="15" oninput="updateFPS()">
+                
+                <label for="escalaSlider">🔍 Factor de Escala: <span id="escalaValue">0.6</span></label>
+                <input type="range" id="escalaSlider" min="0.1" max="1.0" step="0.1" value="0.6" oninput="updateEscala()">
+                
+                <br><br>
+                <button onclick="prepareVideo()">Preparar vídeo</button>
+                <button onclick="startStream()" id="streamBtn" disabled>Iniciar análisis</button>
+                <button onclick="stopStream()">Detener</button>
+            </div>
+            
+            <div id="status" class="status"></div>
+            <div id="error" class="error" style="display:none;"></div>
+            
+            <img id="videoStream" style="display:none;" alt="Vídeo análisis">
+        </div>
+
+    <script>
+            const serverUrl = "http://localhost:8000";
+            let prepared = false;
+
+            // Recuperar y mostrar la información del proyecto
+            async function cargarInfoProyecto() {
+                try {
+                    const resp = await fetch(`${serverUrl}/`);
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        document.getElementById('infoProyecto').innerHTML = `
+                            <strong>${data.titulo}</strong><br>
+                            <b>Equipo:</b> ${data.equipo}<br>
+                            <b>Version:</b> ${data.version}<br>
+                            <span>${data.descripcion}</span>
+                        `;
+                    } else {
+                        document.getElementById('infoProyecto').innerHTML = 'No se pudo recuperar la información del proyecto.';
+                    }
+                } catch (e) {
+                    document.getElementById('infoProyecto').innerHTML = 'Error de conexión con la API.' + e;
+                }
+            }
+
+            window.onload = cargarInfoProyecto;
+            
+            function updateFPS() {
+                const fps = document.getElementById('fpsSlider').value;
+                document.getElementById('fpsValue').textContent = fps;
+            }
+            
+            function updateEscala() {
+                const escala = document.getElementById('escalaSlider').value;
+                document.getElementById('escalaValue').textContent = escala;
+            }
+            
+            async function prepareVideo() {
+                const videoUrl = document.getElementById('videoUrl').value;
+                const fps = parseFloat(document.getElementById('fpsSlider').value);
+                const escala = parseFloat(document.getElementById('escalaSlider').value);
+                const status = document.getElementById('status');
+                const error = document.getElementById('error');
+                
+                if (!videoUrl) {
+                    showError('Ingresa una URL válida');
+                    return;
+                }
+                
+                try {
+                    status.innerHTML = '⏳ Preparando video...';
+                    error.style.display = 'none';
+                    
+                    const response = await fetch(`${serverUrl}/prepare-video`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            url: videoUrl, 
+                            factor_escala: escala, 
+                            fps_limite: fps,
+                            delay_frames: 1.0 / fps
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        status.innerHTML = `✅ Vídeo preparado: ${data.message}<br>🎞️ FPS configurado: ${fps}<br>🔍 Escala: ${escala}`;
+                        document.getElementById('streamBtn').disabled = false;
+                        prepared = true;
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || 'Error preparando vídeo');
+                    }
+                } catch (err) {
+                    showError(err.message);
+                    status.innerHTML = '';
+                }
+            }
+            
+            function startStream() {
+                if (!prepared) {
+                    showError('Primero prepara el vídeo');
+                    return;
+                }
+                
+                const img = document.getElementById('videoStream');
+                const timestamp = new Date().getTime();
+                img.src = `${serverUrl}/stream?t=${timestamp}`;
+                img.style.display = 'block';
+                
+                const fps = document.getElementById('fpsSlider').value;
+                document.getElementById('status').innerHTML = `🎬 Análisis iniciado a ${fps} FPS`;
+            }
+            
+            function stopStream() {
+                const img = document.getElementById('videoStream');
+                img.src = '';
+                img.style.display = 'none';
+                document.getElementById('status').innerHTML = '⏹️ Análisis detenido';
+            }
+            
+            function showError(message) {
+                const error = document.getElementById('error');
+                error.innerHTML = '❌ ' + message;
+                error.style.display = 'block';
+            }
+        </script>
+    </body>
+    </html>
