@@ -63,6 +63,8 @@ except ImportError as e:
 from .download_video import download_video
 from .analyze_video import get_complete_video_info
 from .process_local_video import generate_video_stream
+from .db.routes import router as db_router
+
 import uuid
 
 # Funciones de respaldo cuando no se usa el core
@@ -83,6 +85,8 @@ def get_system_message_fallback(key, default=""):
     return messages.get(key, default)
 
 app = FastAPI(**API_CONFIG)
+
+app.include_router(db_router)
 
 # Configurar CORS 
 app.add_middleware(
