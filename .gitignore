@@ -23,9 +23,9 @@ datasets/
 models/
 *.h5
 *.ckpt
-*.pt
+# *.pt
 *.pth
-*.onnx
+# *.onnx
 *.tflite
 *.npz
 *.npy

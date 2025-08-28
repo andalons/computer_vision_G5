@@ -1,0 +1,4 @@
+class_idx,class_name,num_images,out_folder
+0,adidas,210,C:\Users\admin\Desktop\MACHINE LEARNING\YOLO\ab\by_class\adidas\images
+1,nike,205,C:\Users\admin\Desktop\MACHINE LEARNING\YOLO\ab\by_class\nike\images
+2,puma,198,C:\Users\admin\Desktop\MACHINE LEARNING\YOLO\ab\by_class\puma\images
