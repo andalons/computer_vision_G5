@@ -74,6 +74,57 @@ class AnalysisService {
   }
 
   /**
+   * Obtiene información del video actualmente cargado
+   * @returns {Promise<Object>} Información del video
+   */
+  async getVideoInfo() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/video-info`);
+      if (!response.ok) {
+        throw new Error('No se pudo obtener la información del video');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener información del video:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene las estadísticas del sistema
+   * @returns {Promise<Object>} Estadísticas del sistema
+   */
+  async getSystemStats() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/stats`);
+      if (!response.ok) {
+        throw new Error('No se pudieron obtener las estadísticas');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener estadísticas:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verifica el estado de salud de la API
+   * @returns {Promise<Object>} Estado de salud
+   */
+  async healthCheck() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/health`);
+      if (!response.ok) {
+        throw new Error('Health check falló');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error en health check:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Obtiene la URL del stream de video
    * @returns {string} URL del stream
    */
@@ -88,7 +139,7 @@ class AnalysisService {
    */
   async isApiAvailable() {
     try {
-      const response = await fetch(`${API_BASE_URL}/`, {
+      const response = await fetch(`${API_BASE_URL}/health`, {
         method: 'HEAD'
       });
       return response.ok;
