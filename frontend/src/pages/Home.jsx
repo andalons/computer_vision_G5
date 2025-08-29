@@ -5,6 +5,7 @@ import SupportedBrandsSection from '../components/home/SupportedBrandsSection';
 import VideoDemoSection from '../components/home/VideoDemoSection';
 import KeyFeaturesSection from '../components/home/KeyFeaturesSection';
 import PricingSection from '../components/home/PricingSection';
+import CtaSection from '../components/home/CtaSection';
 
 const Home = () => {
   return (
@@ -27,6 +28,9 @@ const Home = () => {
 
       {/* Sección de precios */}
       <PricingSection />
+
+      {/* Sección de CTA */}
+      <CtaSection />
   
     </div>
   );
