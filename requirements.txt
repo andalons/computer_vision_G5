@@ -12,3 +12,7 @@ python-multipart>=0.0.6
 
 # Utilidades del sistema (incluidas con Python)
 # asyncio, concurrent.futures, json, os, sys, time, uuid
+
+# Base de datos y cliente Supabase
+supabase>=1.0.0
+python-dotenv>=1.0.0
