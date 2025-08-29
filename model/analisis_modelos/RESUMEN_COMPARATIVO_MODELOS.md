@@ -30,33 +30,40 @@
 - **Estado:** ✅ Completado exitosamente
 - **Configuración:** Batch size 8, 640x640px, 100 épocas, multi_scale: true
 
+### **Versión 4 (v4) - YOLO11n (Nano) + Multi-Scale + 3 clases**
+- **Arquitectura:** YOLO11n (nano) con multi-scale training
+- **Clases:** 3 marcas principales (adidas, nike, puma)
+- **Duración:** ~2.2 horas (8,030 segundos)
+- **Estado:** ✅ Completado exitosamente
+- **Configuración:** Batch size 8, 640x640px, 100 épocas, multi_scale: true
+
 ---
 
 ## 📈 **Comparación de Métricas Finales (Época 100)**
 
-| Métrica | **V1 (YOLO11n - 10 clases)** | **V2 (YOLO11s - 3 clases)** | **V3 (YOLO11s + Multi-scale - 3 clases)** |
-|---------|-------------------------------|------------------------------|---------------------------------------------|
-| **mAP50** | **88.05%** 🥇 | 83.91% 🥈 | 81.41% 🥉 |
-| **mAP50-95** | **58.04%** 🥇 | 51.72% 🥈 | 49.36% 🥉 |
-| **Precisión** | **91.69%** 🥈 | 90.16% 🥉 | 80.74% |
-| **Recall** | 80.54% 🥉 | 76.52% | **79.80%** 🥈 |
-| **Box Loss** | **1.064** 🥇 | 1.151 🥈 | 1.310 🥉 |
-| **Class Loss** | **0.722** 🥇 | 0.771 🥈 | 0.927 🥉 |
-| **DFL Loss** | **1.164** 🥇 | 1.291 🥈 | 1.514 🥉 |
+| Métrica        | **V1 (YOLO11n - 10 clases)** | **V2 (YOLO11s - 3 clases)** | **V3 (YOLO11s + Multi-scale - 3 clases)** | **V4 (YOLO11n + Multi-scale - 3 clases)** |
+|---------------|-------------------------------|------------------------------|---------------------------------------------|---------------------------------------------|
+| **mAP50**     | **88.05%** 🥇                 | 83.91% 🥈                    | 81.41% 🥉                                   | 82.65%                                      |
+| **mAP50-95**  | **58.04%** 🥇                 | 51.72% 🥈                    | 49.36% 🥉                                   | 53.14%                                      |
+| **Precisión** | **91.69%** 🥈                 | 90.16% 🥉                    | 80.74%                                     | **91.44%** 🥈                               |
+| **Recall**    | 80.54% 🥉                      | 76.52%                       | **79.80%** 🥈                              | 75.15%                                      |
+| **Box Loss**  | **1.064** 🥇                  | 1.151 🥈                     | 1.310 🥉                                   | 1.239                                       |
+| **Class Loss**| **0.722** 🥇                  | 0.771 🥈                     | 0.927 🥉                                   | 0.869                                       |
+| **DFL Loss**  | **1.164** 🥇                  | 1.291 🥈                     | 1.514 🥉                                   | 1.305                                       |
 
 ### 📊 **Configuraciones de Entrenamiento**
 
-| Parámetro | **V1** | **V2** | **V3** |
-|-----------|--------|--------|--------|
-| **Modelo Base** | yolo11n.pt | yolo11s.pt | yolo11s.pt |
-| **Optimizador** | AdamW | AdamW | AdamW |
-| **Learning Rate** | 0.01 | 0.01 | 0.01 |
-| **Batch Size** | 8 | 8 | 8 |
-| **IoU Threshold** | 0.7 | 0.7 | 0.7 |
-| **Patience** | 20 | 20 | 20 |
-| **Multi-scale** | ❌ | ❌ | ✅ |
-| **Cosine LR** | ✅ | ✅ | ✅ |
-| **AMP** | ✅ | ✅ | ✅ |
+| Parámetro | **V1** | **V2** | **V3** | **V4** |
+|-----------|--------|--------|--------|--------|
+| **Modelo Base** | yolo11n.pt | yolo11s.pt | yolo11s.pt | yolo11n.pt |
+| **Optimizador** | AdamW | AdamW | AdamW | AdamW |
+| **Learning Rate** | 0.01 | 0.01 | 0.01 | 0.01 |
+| **Batch Size** | 8 | 8 | 8 | 8 |
+| **IoU Threshold** | 0.7 | 0.7 | 0.7 | 0.7 |
+| **Patience** | 20 | 20 | 20 | 20 |
+| **Multi-scale** | ❌ | ❌ | ✅ | ✅ |
+| **Cosine LR** | ✅ | ✅ | ✅ | ✅ |
+| **AMP** | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -126,6 +133,27 @@
 - Base para experimentación con hiperparámetros
 - Análisis de por qué multi-scale no funcionó como esperado
 
+### **⭐ Modelo V4 - YOLO11n Nano + Multi-Scale (3 clases)**
+**Puntuación General: 8.5/10**
+
+**Fortalezas:**
+- ✅ Precisión muy alta (91.44%)
+- ✅ mAP50 competitivo (82.65%)
+- ✅ Convergencia estable y sin sobreentrenamiento
+- ✅ Multi-scale training y augmentations avanzadas
+- ✅ Modelo ligero y rápido (nano)
+- ✅ Tiempo de entrenamiento eficiente (~2.2h)
+
+**Debilidades:**
+- ⚠️ Recall algo inferior (75.15%)
+- ⚠️ mAP50-95 mejorable (53.14%)
+- ⚠️ Solo 3 clases (menos versátil que v1)
+
+**Casos de Uso Recomendados:**
+- Producción en sistemas con recursos limitados
+- Aplicaciones móviles y edge
+- Detección rápida de Adidas, Nike y Puma
+
 ---
 
 ## 🎯 **Conclusiones y Recomendaciones Finales**
@@ -146,11 +174,11 @@ El resultado más sorprendente es que **YOLO11n (nano) superó significativament
 - **Deployment:** Inmediato
 - **Mantenimiento:** Bajo - Modelo estable y eficiente
 
-#### **⚡ Para Eficiencia: Modelo V2**
-- **Razón:** Balance óptimo tiempo/rendimiento
-- **ROI:** Bueno - Rápido desarrollo y deployment
-- **Uso específico:** Cuando solo se necesitan las 3 marcas principales
-- **Ventaja:** Ciclos de desarrollo más cortos
+#### **⚡ Para Producción Eficiente (3 clases): Modelo V4**
+- **Razón:** Precisión y mAP altos, modelo ligero y rápido
+- **ROI:** Muy bueno - Excelente rendimiento en recursos limitados
+- **Deployment:** Rápido - Entrenamiento y ajuste eficientes
+- **Mantenimiento:** Bajo - Modelo nano con alta estabilidad
 
 #### **🔬 Para Investigación: Modelo V3**
 - **Razón:** Entender por qué multi-scale no mejoró
@@ -159,6 +187,12 @@ El resultado más sorprendente es que **YOLO11n (nano) superó significativament
   - Ajustar learning rate y warmup epochs
   - Analizar distribución del dataset
   - Probar con más datos de entrenamiento
+
+#### **⚡ Para Prototipado Rápido: Modelo V2**
+- **Razón:** Entrenamiento rápido y buen equilibrio
+- **ROI:** Bueno - Ideal para iteraciones ágiles
+- **Uso específico:** Cuando solo se necesitan las 3 marcas principales
+- **Ventaja:** Ciclos de desarrollo más cortos
 
 ---
 
@@ -186,12 +220,12 @@ El resultado más sorprendente es que **YOLO11n (nano) superó significativament
 
 ## 📊 **Métricas de Éxito del Proyecto**
 
-| Objetivo | V1 | V2 | V3 | ✅ Logrado |
-|----------|----|----|----|----|
-| mAP50 > 80% | 88.05% | 83.91% | 81.41% | ✅ Todos |
-| mAP50-95 > 45% | 58.04% | 51.72% | 49.36% | ✅ Todos |
-| Precisión > 85% | 91.69% | 90.16% | 80.74% | ✅ V1, V2 |
-| Tiempo entrenamiento < 6h | 5.26h | 2.5h | 5.16h | ✅ Todos |
+| Objetivo                  | V1     | V2     | V3     | V4     | ✅ Logrado |
+|---------------------------|--------|--------|--------|--------|------------|
+| mAP50 > 80%               | 88.05% | 83.91% | 81.41% | 82.65% | ✅ Todos   |
+| mAP50-95 > 45%            | 58.04% | 51.72% | 49.36% | 53.14% | ✅ Todos   |
+| Precisión > 85%           | 91.69% | 90.16% | 80.74% | 91.44% | ✅ V1, V2, V4 |
+| Tiempo entrenamiento < 6h | 5.26h  | 2.5h   | 5.16h  | 2.2h   | ✅ Todos   |
 
 ### **🏆 Resultado Final del Proyecto**
 - **Estado:** ✅ **EXITOSO**
@@ -205,8 +239,9 @@ El resultado más sorprendente es que **YOLO11n (nano) superó significativament
 
 ### **Ubicación de Modelos:**
 - `model/analisis_modelos/v1/` - YOLO11n con 10 clases
-- `model/analisis_modelos/v2/` - YOLO11s con 3 clases  
+- `model/analisis_modelos/v2/` - YOLO11s con 3 clases
 - `model/analisis_modelos/v3/` - YOLO11s multi-scale con 3 clases
+- `model/analisis_modelos/v4/` - YOLO11n multi-scale con 3 clases
 
 ### **Archivos Clave:**
 - `results.csv` - Métricas detalladas por época
