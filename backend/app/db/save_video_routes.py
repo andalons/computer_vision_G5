@@ -1,11 +1,11 @@
 """
-API routes for database interaction (videos + metrics).
+Routes for extracting and saving video metadata into Supabase
 """
 
 from fastapi import APIRouter, HTTPException
-from .models import VideoMetricCreate, VideoCreate
-from .services import insert_video, get_all_videos, insert_video_metric, get_metrics_for_video
-from .utils import extract_video_metadata
+from ..db.utils import extract_video_metadata
+from ..db.services import insert_video
+from ..db.models import VideoCreate
 
 from ..analyze_video import get_complete_video_info
 from ..download_video import download_video
@@ -13,15 +13,13 @@ from ..core.utils import generate_video_path  # para crear ruta temporal
 
 router = APIRouter(prefix="/db", tags=["database"])
 
-# -------------------------------
-# Save video metadata + contract info
-# -------------------------------
 @router.post("/save-video-info")
 def save_video_info(video: VideoCreate):
     """
     Extract video metadata from URL, analyze technical info,
     and save it to Supabase with contract requirements.
     """
+
     try:
         # 1. Extract metadata from URL (yt-dlp)
         metadata = extract_video_metadata(video.url)
@@ -49,7 +47,7 @@ def save_video_info(video: VideoCreate):
         }
 
         # 4. Save to Supabase
-        result = insert_video(video_record)
+        result = insert_video(video_record.model_dump())
 
         return {
             "message": "✅ Video metadata + contract info saved successfully",
@@ -61,29 +59,3 @@ def save_video_info(video: VideoCreate):
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error saving video info: {str(e)}")
-
-
-# -------------------------------
-# Video listing
-# -------------------------------
-@router.get("/videos")
-def list_videos():
-    """
-    Retrieve all stored videos from Supabase.
-    """
-    return get_all_videos()
-
-
-# -------------------------------
-# Metrics endpoints
-# -------------------------------
-@router.post("/metrics")
-def create_metric(metric: VideoMetricCreate):
-    result = insert_video_metric(metric.model_dump())
-    if not result:
-        raise HTTPException(status_code=500, detail="Failed to insert metric")
-    return result
-
-@router.get("/metrics/{video_id}")
-def list_metrics(video_id: str):
-    return get_metrics_for_video(video_id)

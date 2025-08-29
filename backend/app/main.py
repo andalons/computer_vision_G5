@@ -86,6 +86,7 @@ def get_system_message_fallback(key, default=""):
 
 app = FastAPI(**API_CONFIG)
 
+# Routers
 app.include_router(db_router)
 
 # Configurar CORS 
