@@ -6,11 +6,10 @@ from .supabase_client import supabase
 from .models import VideoCreate, VideoMetricCreate
 from typing import List, Optional
 
-def insert_video(video: VideoCreate) -> Optional[dict]:
-    response = supabase.table("videos").insert(video.dict()).execute()
-    if response.data:
-        return response.data[0]
-    return None
+def insert_video(video_data: dict):
+    """Insert video record into Supabase"""
+    response = supabase.table("videos").insert(video_data).execute()
+    return response.data[0] if response.data else None
 
 def get_all_videos() -> List[dict]:
     response = supabase.table("videos").select("*").execute()
