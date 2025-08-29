@@ -7,7 +7,7 @@ Soporta:
 - Predicciones en archivos de video
 - Predicciones en tiempo real con webcam
 
-Autor: Copilot
+Autor: Juan Carlos Macías / Copilot
 Fecha: Agosto 2025
 """
 
@@ -37,16 +37,9 @@ class LogoPredictor:
         
         # Nombres de las clases
         self.class_names = {
-            0: '361',
             1: 'adidas', 
-            2: 'anta',
-            3: 'erke',
-            4: 'kappa',
-            5: 'lining',
-            6: 'nb',
             7: 'nike',
             8: 'puma',
-            9: 'xtep'
         }
         
         print(f"✅ Modelo cargado correctamente")
@@ -114,7 +107,7 @@ class LogoPredictor:
             x1, y1, x2, y2 = box.xyxy[0].tolist()
             
             print(f"📍 Logo {i+1}:")
-            print(f"   🏷️  Marca: {class_name}")
+            print(f"   🏷️ Marca: {class_name}")
             print(f"   🎯 Confianza: {confidence:.2%}")
             print(f"   📦 Coordenadas: ({int(x1)}, {int(y1)}) - ({int(x2)}, {int(y2)})")
             print()
