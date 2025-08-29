@@ -3,6 +3,7 @@ import HeroSection from '../components/home/HeroSection';
 import ProblemSolutionSection from '../components/home/ProblemSolutionSection';
 import SupportedBrandsSection from '../components/home/SupportedBrandsSection';
 import VideoDemoSection from '../components/home/VideoDemoSection';
+import KeyFeaturesSection from '../components/home/KeyFeaturesSection';
 
 const Home = () => {
   return (
@@ -17,8 +18,11 @@ const Home = () => {
       {/* Sección de Logos Soportados con búcle infinito*/}
       <SupportedBrandsSection />
 
-      {/* Video Demo Section */}
+      {/* Sección vídeo demo */}
       <VideoDemoSection />
+
+      {/* Sección de características */}
+      <KeyFeaturesSection />
   
     </div>
   );

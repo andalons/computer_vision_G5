@@ -28,7 +28,7 @@ const VideoDemoSection = () => {
             </video>
           </div>
           
-          {/* Mobile responsive overlay stats */}
+          {/*  Responsive móviles */}
           <div className="absolute p-3 sm:p-4 bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 bg-white/95 backdrop-blur-sm rounded-button">
             <div className="grid grid-cols-3 gap-2 text-center sm:gap-4">
               <div>
