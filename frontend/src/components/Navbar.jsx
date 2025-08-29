@@ -46,8 +46,8 @@ const Navbar = () => {
       path: '/link-analysis'
     },
     {
-      name: 'Statistics',
-      path: '/statistics'
+      name: 'ROI Reports',
+      path: '/roi-reports'
     }
   ];
 
