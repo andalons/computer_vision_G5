@@ -2,6 +2,7 @@ import React from 'react';
 import HeroSection from '../components/home/HeroSection';
 import ProblemSolutionSection from '../components/home/ProblemSolutionSection';
 import SupportedBrandsSection from '../components/home/SupportedBrandsSection';
+import VideoDemoSection from '../components/home/VideoDemoSection';
 
 const Home = () => {
   return (
@@ -15,6 +16,9 @@ const Home = () => {
 
       {/* Sección de Logos Soportados con búcle infinito*/}
       <SupportedBrandsSection />
+
+      {/* Video Demo Section */}
+      <VideoDemoSection />
   
     </div>
   );
