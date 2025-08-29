@@ -9,15 +9,18 @@ from datetime import datetime
 
 class VideoCreate(BaseModel):
     url: str
-    platform: str
+    brand: str  # obligatorio, siempre debe estar
+    platform: Optional[str] = None  # detectada automáticamente, no requerida
     influencer: Optional[str] = None
     title: Optional[str] = None
     description: Optional[str] = None
     duration_seconds: Optional[int] = None
     likes: Optional[int] = None
     comments: Optional[int] = None
-    shares: Optional[int] = None
     views: Optional[int] = None
+    contract_price: Optional[float] = None
+    min_brand_time: Optional[int] = None  # en segundos
+    min_logo_area: Optional[float] = None  # en porcentaje de pantalla
 
 class VideoDB(VideoCreate):
     id: UUID
