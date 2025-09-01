@@ -28,14 +28,14 @@ const ContractStatus = ({ metrics, formData }) => {
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 text-center rounded-button bg-lila-500/10">
             <div className="text-lg font-bold font-montserrat text-lila-500">
-              {formData.min_brand_time || 0}s / {metrics?.total_time_seconds || 0}s
+              {formData.min_brand_time || 0}s / {(metrics?.total_time_seconds || 0).toFixed(1)}s
             </div>
             <div className="text-xs font-source text-petroleo-400">Required / Actual</div>
           </div>
           
           <div className="p-4 text-center rounded-button bg-mostaza-500/10">
             <div className="text-lg font-bold font-montserrat text-mostaza-500">
-              {formData.min_logo_area || 0}% / {metrics?.average_area_percentage || 0}%
+              {formData.min_logo_area || 0}% / {(metrics?.average_area_percentage || 0).toFixed(1)}%
             </div>
             <div className="text-xs font-source text-petroleo-400">Required / Actual</div>
           </div>

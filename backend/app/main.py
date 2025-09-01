@@ -10,6 +10,7 @@ from fastapi.responses import StreamingResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uuid
+from fastapi.staticfiles import StaticFiles
 
 # Intentar importar del core, si falla usar configuración de respaldo
 try:
@@ -85,6 +86,8 @@ def get_system_message_fallback(key, default=""):
     return messages.get(key, default)
 
 app = FastAPI(**API_CONFIG)
+
+app.mount("/screenshots", StaticFiles(directory="runs/debug_frames"), name="screenshots")
 
 # Routers
 app.include_router(db_router)

@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Upload, Check } from 'lucide-react';
-import { prepareVideo, getStreamUrl } from '../../services/AnalysisService';
-import { saveVideoInfo, getVideoMetrics, analyzeVideo } from '../../services/DatabaseService';
+import { prepareVideo, getStreamUrl, analyzeVideo } from '../../services/AnalysisService';
+import { saveVideoInfo, getVideoMetrics } from '../../services/DatabaseService';
 
 const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -43,45 +43,61 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
       });
 
       console.log('Video guardado:', videoResponse);
+
+      // Verificar que tenemos videoId válido
+      if (!videoResponse?.supabase_record?.id) {
+        throw new Error('No se pudo obtener el ID del video guardado');
+      }
+
+      const videoId = videoResponse.supabase_record.id;
       
       // Paso 2: Processing
       setCurrentStep(1);
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Preparar el video para procesamiento
-      await prepareVideo({ url: formData.url });
+      // Preparar el video para procesamiento (opcional, depende de tu flujo)
+      try {
+        await prepareVideo({ url: formData.url });
+      } catch (prepareError) {
+        console.warn('Prepare video failed, continuing:', prepareError);
+        // No fallar aquí, continuar con el análisis
+      }
       
-      // Paso 3: Analyzing
+      // Paso 3: Analyzing 
       setCurrentStep(2);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Iniciando análisis con YOLO para video ID:', videoId);
       
-      // Intentar obtener métricas reales
-      const videoId = videoResponse.supabase_record.id;
+      // Llamar al endpoint que REALMENTE hace el análisis con YOLO
+      const analysisResult = await analyzeVideo(videoId);
+      console.log('Análisis completado:', analysisResult);
+      
+      // Verificar que el análisis fue exitoso
+      if (!analysisResult?.metrics) {
+        throw new Error('El análisis no generó métricas válidas');
+      }
+
+      // Ahora obtener las métricas que fueron generadas por el análisis
       const realMetrics = await getVideoMetrics(videoId);
+      console.log('Métricas obtenidas:', realMetrics);
       
       let metricsData;
       if (realMetrics && realMetrics.length > 0) {
         metricsData = realMetrics[0];
       } else {
-        // Métricas aún no disponibles
-        metricsData = {
-          total_time_seconds: 0,
-          percentage_time: 0,
-          average_area_percentage: 0,
-          confidence_score: 0,
-          contract_compliant: false
-        };
+        // Usar las métricas del resultado del análisis como fallback
+        metricsData = analysisResult.metrics;
       }
 
-      // Realizar análisis de screenshots
-      let screenshotsData = null;
-      try {
-        screenshotsData = await analyzeVideo(videoId);
-        console.log('Screenshots generados:', screenshotsData);
-      } catch (error) {
-        console.warn('Error generando screenshots:', error);
-        // Continuar sin screenshots por ahora
-      }
+      // Verificar compliance del contrato
+      const minBrandTime = parseInt(formData.min_brand_time);
+      const minLogoArea = parseFloat(formData.min_logo_area);
+      const contractCompliant = (
+        (metricsData.total_time_seconds >= minBrandTime) && 
+        (metricsData.average_area_percentage >= minLogoArea)
+      );
+
+      // Agregar información de compliance a las métricas
+      metricsData.contract_compliant = contractCompliant;
       
       // Paso 4: Complete
       setCurrentStep(3);
@@ -96,12 +112,13 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
           },
           metrics: metricsData,
           formData: formData,
-          screenshots: screenshotsData
+          screenshots: analysisResult.screenshots ? { screenshots: analysisResult.screenshots } : null
         });
       }
       
     } catch (err) {
-      setError(err.message || 'Error during analysis. Please try again.');
+      console.error('Error durante el análisis:', err);
+      setError(err.message || 'Error durante el análisis. Por favor, inténtalo de nuevo.');
     } finally {
       setIsLoading(false);
     }

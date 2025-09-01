@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nextFrame, prevFrame, hasRealImages = false }) => {
+const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nextFrame, prevFrame, hasRealImages = false, metrics }) => {
   return (
     <div className="p-8 bg-white rounded-card shadow-strong">
       <h2 className="mb-8 text-3xl font-bold font-montserrat text-petroleo-500">
@@ -32,10 +32,10 @@ const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nex
             <div className="text-center">
               <div className="w-20 h-20 mx-auto mb-6 border-4 border-white rounded-full opacity-80"></div>
               <p className="text-lg font-source opacity-80">
-                Frame {currentFrame + 1} - {detectionFrames[currentFrame].timestamp}
+                Frame {currentFrame + 1}
               </p>
               <p className="mt-2 text-sm font-source opacity-60">
-                Logo detected with {detectionFrames[currentFrame].confidence}% confidence
+                Logo detected with {Math.round(metrics?.confidence_score * 100 || 0)}% confidence
               </p>
               {!hasRealImages && (
                 <p className="mt-2 text-xs font-source opacity-40">
@@ -77,29 +77,29 @@ const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nex
           </button>
         </div>
 
-        {/* Estadísticas de fotograma */}
+        {/* DATOS FIJOS DE LA BASE DE DATOS */}
         <div className="grid grid-cols-4 gap-4 p-6 bg-gradient-to-r from-humo-600 to-humo-400 rounded-card">
           <div className="text-center">
             <div className="text-2xl font-bold font-montserrat text-coral-500">
-              {detectionFrames[currentFrame].confidence || 0}%
+              {Math.round(metrics?.confidence_score * 100 || 0)}%
             </div>
             <div className="text-sm font-source text-petroleo-400">Confidence</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold font-montserrat text-mostaza-500">
-              {detectionFrames[currentFrame].timestamp}
+              {Math.round(metrics?.total_time_seconds || 0)}s
             </div>
-            <div className="text-sm font-source text-petroleo-400">Time</div>
+            <div className="text-sm font-source text-petroleo-400">Total Time</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold font-montserrat text-lila-500">
-              {detectionFrames[currentFrame].brand || 'N/A'}
+              {metrics?.brand || 'N/A'}
             </div>
             <div className="text-sm font-source text-petroleo-400">Brand</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold font-montserrat text-petroleo-500">
-              {detectionFrames[currentFrame].screenPercentage || 0}%
+              {Math.round(metrics?.average_area_percentage || 0)}%
             </div>
             <div className="text-sm font-source text-petroleo-400">Screen</div>
           </div>

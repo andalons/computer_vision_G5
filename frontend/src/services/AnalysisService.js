@@ -51,6 +51,26 @@ export const prepareVideo = async (videoConfig) => {
   }
 };
 
+// NUEVA FUNCIÓN: Analizar video con YOLO y generar métricas
+export const analyzeVideo = async (videoId) => {
+  if (!videoId) {
+    throw new Error('Video ID es requerido para el análisis');
+  }
+
+  try {
+    const response = await api.post(`/db/analyze-video/${videoId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al analizar video:', error);
+    if (error.response?.status === 404) {
+      throw new Error('Video no encontrado o archivo local no disponible');
+    } else if (error.response?.status === 500) {
+      throw new Error('Error interno del servidor durante el análisis');
+    }
+    throw error;
+  }
+};
+
 // Obtener información del video cargado
 export const getVideoInfo = async () => {
   try {

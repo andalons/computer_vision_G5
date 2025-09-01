@@ -71,23 +71,26 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     // Background para la sección
     yPos += 5;
     doc.setFillColor(248, 249, 250);
-    doc.rect(15, yPos, 180, 35, 'F');
+    doc.rect(15, yPos, 180, 40, 'F');
     
     yPos += 12;
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(52, 73, 94);
     
-    doc.text(`Brand Analyzed: ${formData.brand || 'N/A'}`, 20, yPos);
+    doc.text(`Brand Requested: ${formData.brand || 'N/A'}`, 20, yPos);
     doc.text(`Contract Investment: €${contractPrice}`, 110, yPos);
     
     yPos += 8;
-    doc.text(`Total Views: ${views.toLocaleString()}`, 20, yPos);
-    doc.text(`Comments: ${comments.toLocaleString()}`, 110, yPos);
+    doc.text(`Brand Detected: ${metrics.brand || 'N/A'}`, 20, yPos);
+    doc.text(`Total Views: ${views.toLocaleString()}`, 110, yPos);
     
     yPos += 8;
     doc.text(`Platform: ${videoData.platform || 'YouTube'}`, 20, yPos);
-    doc.text(`Influencer: ${videoData.influencer || 'Not available'}`, 110, yPos);
+    doc.text(`Comments: ${comments.toLocaleString()}`, 110, yPos);
+    
+    yPos += 8;
+    doc.text(`Influencer: ${videoData.influencer || 'Not available'}`, 20, yPos);
     
     yPos += 8;
     doc.text('Video URL: ', 20, yPos);
@@ -98,7 +101,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setTextColor(0, 0, 255); // azul para link
     doc.textWithLink(displayUrl, 45, yPos, { url: videoUrl });
     
-    // SecciÓN DE RESULTADOS DE DETECCIÓN DE LOGOS
+    // SECCIÓN DE RESULTADOS DE DETECCIÓN DE LOGOS
     yPos += 20;
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
@@ -114,13 +117,13 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(52, 73, 94);
     
-    doc.text(`Logo Exposure Time: ${totalTime}s (Required: ${minBrandTime}s)`, 20, yPos);
+    doc.text(`Logo Exposure Time: ${totalTime.toFixed(1)}s (Required: ${minBrandTime}s)`, 20, yPos);
     
     yPos += 8;
-    doc.text(`Average Logo Area: ${metrics.average_area_percentage || 0}% (Required: ${formData.min_logo_area || 0}%)`, 20, yPos);
+    doc.text(`Average Logo Area: ${(metrics.average_area_percentage || 0).toFixed(1)}% (Required: ${formData.min_logo_area || 0}%)`, 20, yPos);
     
     yPos += 8;
-    doc.text(`Detection Confidence: ${metrics.confidence_score || 0}%`, 20, yPos);
+    doc.text(`Detection Confidence: ${((metrics.confidence_score || 0) * 100).toFixed(1)}%`, 20, yPos);
     
     yPos += 8;
     const complianceText = `Contract Status: ${metrics.contract_compliant ? 'COMPLIANT' : 'NON-COMPLIANT'}`;

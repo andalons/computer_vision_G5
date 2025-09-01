@@ -23,10 +23,10 @@ const SupportedBrandsSection = () => {
         </p>
       </div>
       
-      {/* Full widht para movimiento infinito */}
+      {/* Full width para movimiento infinito */}
       <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden">
         <div className="flex animate-slide-infinite">
-          {/*  Búcle de logos infinitos */}
+          {/* Bucle de logos infinitos */}
           {Array(4).fill(supportedBrands).flat().map((brand, index) => (
             <div key={index} className="flex items-center justify-center flex-shrink-0 h-32 p-6 mx-3 bg-white sm:h-40 w-72 sm:w-96 sm:mx-6 rounded-card shadow-soft">
               <img
@@ -45,8 +45,8 @@ const SupportedBrandsSection = () => {
         </span>
       </div>
 
-      {/* Animaciones CSS */}
-      <style jsx>{`
+      {/* CSS en el head del documento o en un archivo CSS global */}
+      <style>{`
         @keyframes slide-infinite {
           0% {
             transform: translateX(0);

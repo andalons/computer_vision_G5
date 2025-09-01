@@ -9,26 +9,18 @@ const AnalysisResults = ({ videoData, metrics, formData, screenshots, onReset })
   // Transformar screenshots reales o usar placeholder
   const detectionFrames = screenshots?.screenshots ? 
     screenshots.screenshots.map((screenshot, index) => {
-      // Extraer información del nombre del archivo o usar datos por defecto
-      const frameNumber = screenshot.match(/_frame(\d+)\.jpg$/)?.[1] || index + 1;
-      const timestamp = `${Math.floor(frameNumber / 30 / 60)}:${Math.floor((frameNumber / 30) % 60).toString().padStart(2, '0')}`;
-      
       return {
         id: index + 1,
-        timestamp: timestamp,
-        confidence: Math.round(metrics?.confidence_score || 0), // Usar dato real o 0
-        brand: metrics?.brand || formData.brand || 'N/A',
-        imageUrl: screenshot.replace('runs/debug_frames/', 'http://localhost:8000/screenshots/'), // Convertir path a URL
-        screenPercentage: Math.round(metrics?.average_area_percentage || 0), // Usar dato real o 0
+        imageUrl: screenshot.replace('runs/debug_frames/', 'http://localhost:8000/screenshots/'),
         framePath: screenshot
       };
     }) :
     // Fallback a datos placeholder si no hay screenshots
     [
-      { id: 1, timestamp: '0:23', confidence: Math.round(metrics?.confidence_score || 0), brand: metrics?.brand || formData.brand, screenPercentage: Math.round(metrics?.average_area_percentage || 0) },
-      { id: 2, timestamp: '1:15', confidence: Math.round(metrics?.confidence_score || 0), brand: metrics?.brand || formData.brand, screenPercentage: Math.round(metrics?.average_area_percentage || 0) },
-      { id: 3, timestamp: '2:08', confidence: Math.round(metrics?.confidence_score || 0), brand: metrics?.brand || formData.brand, screenPercentage: Math.round(metrics?.average_area_percentage || 0) },
-      { id: 4, timestamp: '2:45', confidence: Math.round(metrics?.confidence_score || 0), brand: metrics?.brand || formData.brand, screenPercentage: Math.round(metrics?.average_area_percentage || 0) }
+      { id: 1 },
+      { id: 2 },
+      { id: 3 },
+      { id: 4 }
     ];
 
   const nextFrame = () => {
@@ -93,6 +85,7 @@ const AnalysisResults = ({ videoData, metrics, formData, screenshots, onReset })
               nextFrame={nextFrame}
               prevFrame={prevFrame}
               hasRealImages={!!screenshots?.screenshots}
+              metrics={metrics}
             />
           </div>
 
