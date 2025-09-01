@@ -13,7 +13,7 @@ const MetricsPanel = ({ metrics, formData, videoData }) => {
       <VideoDetails videoData={videoData} formData={formData} />
       
       {/* Acciones rápidas */}
-      <QuickActions />
+      <QuickActions metrics={metrics} formData={formData} videoData={videoData} />
     </>
   );
 };
