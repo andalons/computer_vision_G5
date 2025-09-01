@@ -1,7 +1,42 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import FormInput from '../components/analysis/FormInput';
+import StartAnalysisButton from '../components/analysis/StartAnalysisButton';
 
 const LinkAnalysis = () => {
+  const formRef = useRef();
+  const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [videoData, setVideoData] = useState(null);
+  const [metrics, setMetrics] = useState(null);
+  const [formData, setFormData] = useState(null);
+
+  const handleAnalysisComplete = (data) => {
+    setVideoData(data.videoData);
+    setMetrics(data.metrics);
+    setFormData(data.formData);
+    setAnalysisComplete(true);
+  };
+
+  const resetAnalysis = () => {
+    setAnalysisComplete(false);
+    setVideoData(null);
+    setMetrics(null);
+    setFormData(null);
+    if (formRef.current) {
+      formRef.current.resetForm();
+    }
+  };
+
+  if (analysisComplete) {
+    return (
+      <AnalysisResults 
+        videoData={videoData}
+        metrics={metrics}
+        formData={formData}
+        onReset={resetAnalysis}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen pt-32 pb-20 bg-humo-500">
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
@@ -20,14 +55,14 @@ const LinkAnalysis = () => {
         <div className="relative p-12 mb-12 bg-white rounded-card shadow-strong">
           <div className="relative max-w-6xl mx-auto">
             
-            <FormInput />
+            {/* Formulario */}
+            <FormInput ref={formRef} />
 
-            {/* Placeholder para botón  */}
-            <div className="text-center">
-              <div className="px-16 py-6 text-2xl font-bold text-white transition-all duration-300 font-montserrat rounded-card bg-coral-gradient">
-                Start Analysis 
-              </div>
-            </div>
+            {/* Botón de iniciar análisis */}
+            <StartAnalysisButton 
+              formRef={formRef}
+              onAnalysisComplete={handleAnalysisComplete}
+            />
           </div>
         </div>
       </div>
