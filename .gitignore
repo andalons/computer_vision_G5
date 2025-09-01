@@ -35,6 +35,8 @@ models/
 # ---- Vídeos ----
 videos_descargados/
 
+# ---- Screenshots ----
+runs/debug_frames/
 
 # ---- OS Specific ----
 # macOS

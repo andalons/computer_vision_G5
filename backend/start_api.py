@@ -1,6 +1,6 @@
 
 import uvicorn
-import sys
+import sys, os
 
 def main():
     """
@@ -18,7 +18,7 @@ def main():
 
     try:
         # Intentar importar la app principal
-        from app.main import app
+        from backend.app.main import app
     except ImportError as e:
         print(f"❌ Error importando la aplicación FastAPI: {e}")
         sys.exit(1)
