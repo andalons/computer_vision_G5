@@ -7,7 +7,7 @@ Soporta:
 - Predicciones en archivos de video
 - Predicciones en tiempo real con webcam
 
-Autor: Juan Carlos Macías / Copilot
+Autor: Copilot
 Fecha: Agosto 2025
 """
 
@@ -19,9 +19,10 @@ import numpy as np
 from ultralytics import YOLO
 import matplotlib.pyplot as plt
 import argparse
+import yaml
 
 class LogoPredictor:
-    def __init__(self, model_path="runs/detect/modelo_entreno_2025-08-28_10-40-53-602689/weights/best.onnx"):
+    def __init__(self, model_path="runs/detect/modelo_entreno_2025-08-30_19-19-42-687094/weights/best.pt"):
         """
         Inicializar el predictor de logos
         
@@ -34,18 +35,77 @@ class LogoPredictor:
         
         print(f"🤖 Cargando modelo desde: {self.model_path}")
         self.model = YOLO(str(self.model_path))
-        
-        # Nombres de las clases
-        self.class_names = {
-            1: 'adidas', 
-            7: 'nike',
-            8: 'puma',
-        }
+
+        # Obtener nombres de clases dinámicamente del modelo
+        self.class_names = self.get_model_classes()
         
         print(f"✅ Modelo cargado correctamente")
-        print(f"📋 Clases disponibles: {list(self.class_names.values())}")
-    
-    def predict_image(self, image_path, conf_threshold=1, save_results=True):
+        print(f"📋 Clases detectadas en el modelo: {len(self.class_names)}")
+        print(f"🏷️  Marcas disponibles: {list(self.class_names.values())}")
+
+    def get_model_classes(self):
+        """
+        Obtener las clases del modelo de forma dinámica
+        
+        Returns:
+            dict: Diccionario con {id: nombre_clase}
+        """
+        try:
+            # Método 1: Desde model.names (más directo)
+            if hasattr(self.model, 'names') and self.model.names:
+                print("📋 Clases obtenidas desde model.names")
+                return self.model.names
+            
+            # Método 2: Desde model.model.names
+            elif hasattr(self.model.model, 'names') and self.model.model.names:
+                print("📋 Clases obtenidas desde model.model.names")
+                return self.model.model.names
+            
+            # Método 3: Hacer una predicción dummy para cargar las clases
+            elif hasattr(self.model, 'predict'):
+                print("📋 Cargando clases mediante predicción dummy...")
+                # Crear imagen dummy de 1x1 pixel
+                dummy_img = np.zeros((1, 1, 3), dtype=np.uint8)
+                temp_results = self.model.predict(dummy_img, verbose=False)
+                if temp_results and hasattr(temp_results[0], 'names'):
+                    return temp_results[0].names
+            
+            # Método 4: Desde el archivo de configuración del dataset
+            config_path = Path("dataset/config.yaml")
+            if config_path.exists():
+                print("📋 Cargando clases desde dataset/config.yaml")
+                import yaml
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    config = yaml.safe_load(f)
+                    if 'names' in config:
+                        # Convertir lista a diccionario con índices
+                        if isinstance(config['names'], list):
+                            return {i: name for i, name in enumerate(config['names'])}
+                        elif isinstance(config['names'], dict):
+                            return config['names']
+            
+            # Fallback: Clases por defecto basadas en el proyecto
+            print("⚠️  Usando clases por defecto del proyecto")
+            return {
+                0: 'adidas',
+                1: 'adidas_1',
+                2: 'adidas_2',
+                3: 'nike', 
+                4: 'puma'
+            }
+            
+        except Exception as e:
+            print(f"⚠️  Error obteniendo clases del modelo: {e}")
+            print("📋 Usando clases por defecto")
+            return {
+                0: 'adidas',
+                1: 'adidas_1',
+                2: 'adidas_2',
+                3: 'nike', 
+                4: 'puma'
+            }
+
+    def predict_image(self, image_path, conf_threshold=0.5, save_results=True):
         """
         Hacer predicción en una imagen específica
         
@@ -65,15 +125,18 @@ class LogoPredictor:
         print(f"\n🔍 Analizando imagen: {image_path.name}")
         
         # Hacer predicción
+
         results = self.model.predict(
             source=str(image_path),
-            conf=conf_threshold,
+            conf=0.35,          # más recall
+            iou=0.6,            # mejor filtrado
+            max_det=300,
             save=save_results,
             project="runs/predict",
             name="logo_prediction",
-            exist_ok=True
+            exist_ok=True,
+            verbose=False
         )
-        
         # Procesar resultados
         self.process_results(results[0], image_path)
         
@@ -101,13 +164,13 @@ class LogoPredictor:
             # Obtener información de la detección
             confidence = float(box.conf[0])
             class_id = int(box.cls[0])
-            class_name = self.class_names.get(class_id, f"Clase_{class_id}")
+            class_name = self.get_class_name(class_id)
             
             # Coordenadas de la caja
             x1, y1, x2, y2 = box.xyxy[0].tolist()
             
             print(f"📍 Logo {i+1}:")
-            print(f"   🏷️ Marca: {class_name}")
+            print(f"   🏷️  Marca: {class_name}")
             print(f"   🎯 Confianza: {confidence:.2%}")
             print(f"   📦 Coordenadas: ({int(x1)}, {int(y1)}) - ({int(x2)}, {int(y2)})")
             print()
@@ -187,14 +250,17 @@ class LogoPredictor:
         # Hacer predicción en video
         results = self.model.predict(
             source=str(video_path),
-            conf=conf_threshold,
+            conf=0.25,          # más recall
+            iou=0.6,            # mejor filtrado
+            max_det=300,
             show=True,
             save=save_video,
             project="runs/predict",
-            name="video_prediction",
-            exist_ok=True
+            name="logo_prediction",
+            exist_ok=True,
+            verbose=False
         )
-        
+        #print(f" Resultados: {results}")
         if save_video:
             print(f"✅ Video procesado guardado en: runs/predict/video_prediction/")
     
@@ -229,6 +295,51 @@ class LogoPredictor:
             print(f"   {i}: {name}")
         print()
 
+    def list_classes(self):
+        """
+        Listar todas las clases disponibles en el modelo
+        
+        Returns:
+            dict: Diccionario con las clases {id: nombre}
+        """
+        print("\n📋 CLASES DISPONIBLES EN EL MODELO:")
+        print("=" * 45)
+        
+        for class_id, class_name in self.class_names.items():
+            print(f"🏷️  ID: {class_id:2d} → Nombre: '{class_name}'")
+        
+        print(f"\n📊 Total de clases: {len(self.class_names)}")
+        print("=" * 45)
+        
+        return self.class_names
+
+    def get_class_name(self, class_id):
+        """
+        Obtener el nombre de una clase por su ID
+        
+        Args:
+            class_id: ID de la clase
+            
+        Returns:
+            str: Nombre de la clase
+        """
+        return self.class_names.get(class_id, f"Clase_desconocida_{class_id}")
+
+    def get_class_id(self, class_name):
+        """
+        Obtener el ID de una clase por su nombre
+        
+        Args:
+            class_name: Nombre de la clase
+            
+        Returns:
+            int: ID de la clase (None si no se encuentra)
+        """
+        for class_id, name in self.class_names.items():
+            if name.lower() == class_name.lower():
+                return class_id
+        return None
+
 
 def main():
     """Función principal"""
@@ -237,11 +348,12 @@ def main():
     parser.add_argument("--folder", "-f", type=str, help="Ruta a carpeta con imágenes")
     parser.add_argument("--video", "-v", type=str, help="Ruta al archivo de video para analizar")
     parser.add_argument("--webcam", "-w", action="store_true", help="Usar webcam en tiempo real")
-    parser.add_argument("--model", "-m", type=str, default="runs/detect/modelo_entreno_2025-08-28_10-40-53-602689/weights/best.onnx", 
+    parser.add_argument("--model", "-m", type=str, default="runs/detect/modelo_entrenado_v4/weights/best.pt", 
                        help="Ruta al modelo entrenado")
     parser.add_argument("--conf", "-c", type=float, default=0.5, 
                        help="Umbral de confianza (0.0-1.0)")
     parser.add_argument("--info", action="store_true", help="Mostrar información del modelo")
+    parser.add_argument("--classes", action="store_true", help="Listar todas las clases disponibles")
     parser.add_argument("--no-save", action="store_true", help="No guardar el video procesado")
     
     args = parser.parse_args()
@@ -252,6 +364,10 @@ def main():
         
         if args.info:
             predictor.show_model_info()
+            return
+        
+        if args.classes:
+            predictor.list_classes()
             return
         
         if args.image:
@@ -285,9 +401,10 @@ def main():
                 print("3. Analizar un video")
                 print("4. Webcam en tiempo real")
                 print("5. Información del modelo")
+                print("6. Listar clases disponibles")
                 print("0. Salir")
                 
-                choice = input("\n🔸 Selecciona una opción (0-5): ").strip()
+                choice = input("\n🔸 Selecciona una opción (0-6): ").strip()
                 
                 if choice == "0":
                     print("👋 ¡Hasta luego!")
@@ -327,6 +444,9 @@ def main():
                 
                 elif choice == "5":
                     predictor.show_model_info()
+                
+                elif choice == "6":
+                    predictor.list_classes()
                 
                 else:
                     print("❌ Opción no válida")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Script para entrenar YOLO11s con logos de marcas deportivas
-Autor: Juan Carlos Macías / Copilot
+Autor: Copilot
 Fecha: Agosto 2025
 """
 
@@ -19,7 +19,7 @@ from datetime import datetime
 import re
 
 class YOLOTrainer:
-    def __init__(self, data_path="by_class", dataset_path="dataset", version_type="timestamp"):
+    def __init__(self, data_path="by_class", dataset_path="dataset", version_type="timestamp", model_path="yolo11n.pt"):
         """
         Inicializar el entrenador YOLO
         
@@ -27,6 +27,7 @@ class YOLOTrainer:
             data_path: Ruta a los datos organizados por clase
             dataset_path: Ruta donde se creará el dataset YOLO
             version_type: Tipo de versionado ('timestamp' o 'incremental')
+            model_path: Ruta al modelo base (ej: 'yolo11n.pt', 'yolov8n-logo.pt', etc.)
         """
         self.data_path = Path(data_path)
         self.dataset_path = Path(dataset_path)
@@ -34,10 +35,14 @@ class YOLOTrainer:
         self.class_mapping = {}
         self.version_type = version_type
         self.run_name = self.generate_run_name()
-        self.model = ('yolo11s.pt')
+        self.model = model_path  # Ahora configurable
         
         # Crear directorios del dataset
         self.setup_directories()
+        
+        print(f"🤖 Modelo seleccionado: {self.model}")
+        if "logo" in self.model.lower():
+            print("✨ Detectado modelo especializado en logos - Usando configuración optimizada")
         
     def setup_directories(self):
         """Crear estructura de directorios para YOLO"""
@@ -284,7 +289,7 @@ class YOLOTrainer:
             print("❌ Inconsistencia en el dataset")
             return False
     
-    def train_model(self, epochs=100, batch_size=8, img_size=640, patience=20):
+    def train_model(self, epochs=200, batch_size=4, img_size=416, patience=20, lr_custom=None):
         """
         Entrenar el modelo YOLO11s
         
@@ -314,7 +319,7 @@ class YOLOTrainer:
         # Configurar parámetros de entrenamiento
         yaml_config = self.dataset_path / "config.yaml"
         
-        # Entrenar modelo con configuración optimizada para GTX 960M
+        # Entrenar modelo con configuración optimizada para GTX 960M y anti-timeout
         results = model.train(
             data=str(yaml_config),
             epochs=epochs,
@@ -323,7 +328,7 @@ class YOLOTrainer:
             patience=patience,
             device=device,  # Usar GPU automáticamente
             save=True,
-            save_period=10,  # Guardar cada 10 épocas
+            save_period=5,  # Guardar cada 5 épocas (más frecuente para evitar pérdidas)
             project='runs/detect',
             name=self.run_name,  # Usar el nombre versionado
             exist_ok=True,
@@ -337,11 +342,11 @@ class YOLOTrainer:
             cos_lr=True,  # Cosine LR scheduler
             close_mosaic=10,
             resume=False,
-            amp=True,  # Automatic Mixed Precision para GPU
+            amp=False,  # Desactivar AMP para evitar problemas GPU antiguos
             fraction=1.0,
             profile=False,
             freeze=None,
-            multi_scale=False,
+            multi_scale=True,  # Activar para permitir múltiples escalas
             overlap_mask=True,
             mask_ratio=4,
             dropout=0.0,
@@ -370,7 +375,7 @@ class YOLOTrainer:
             classes=None,
             retina_masks=False,
             show_boxes=True,
-            lr0=0.01,
+            lr0=lr_custom if lr_custom is not None else 0.001,  # LR personalizable o por defecto
             lrf=0.01,
             momentum=0.937,
             weight_decay=0.0005,
@@ -394,11 +399,11 @@ class YOLOTrainer:
             flipud=0.0,
             fliplr=0.5,
             bgr=0.0,
-            mosaic=1.0,
-            mixup=0.0,
-            copy_paste=0.0,
+            mosaic=0.3,  # Reducir intensidad de mosaic
+            mixup=0.0, # Desactivar para reducir carga computacional
+            copy_paste=0.0, # Desactivar para estabilidad
             auto_augment='randaugment', # perfecto para usar distintos argumentos (aleatorio), inclinación, foco, etc...
-            erasing=0.4,
+            erasing=0.2,  # Reducir intensidad
             # Parámetros adicionales para optimización GPU
             workers=0,  # Desactivar multiprocessing en Windows
             cache=False,  # No cache en memoria para conservar RAM
@@ -483,21 +488,34 @@ class YOLOTrainer:
                 print(f"❌ Error exportando a {format_type}: {e}")
 
 
-def main(version_type="incremental"):
+def main(version_type="incremental", model_path="yolov8n-logo.pt"):
     """
     Función principal
     
     Args:
         version_type: Tipo de versionado ('timestamp' o 'incremental')
+        model_path: Ruta al modelo base (ej: 'yolo11n.pt', 'yolov8n-logo.pt', etc.)
     """
-    print("🏃‍♂️ Iniciando entrenamiento de YOLO11s para detección de logos deportivos")
+    print("🏃‍♂️ Iniciando entrenamiento de YOLO para detección de logos deportivos")
     print("=" * 70)
     
-    # Crear instancia del entrenador con versionado
-    trainer = YOLOTrainer(version_type=version_type)
+    # Crear instancia del entrenador con versionado y modelo personalizable
+    trainer = YOLOTrainer(version_type=version_type, model_path=model_path)
     
     print(f"🏷️ Tipo de versionado: {version_type}")
+    print(f"🤖 Modelo base: {model_path}")
     print(f"📂 Nombre del run: {trainer.run_name}")
+    
+    # Detectar si es modelo especializado y ajustar configuración
+    is_logo_model = "logo" in model_path.lower()
+    if is_logo_model:
+        print("🎯 Modelo especializado detectado - Aplicando configuración de fine-tuning")
+        epochs = 50  # Menos épocas para fine-tuning
+        lr = 0.0001  # Learning rate más bajo
+    else:
+        print("🔄 Modelo general detectado - Aplicando configuración estándar")
+        epochs = 100
+        lr = 0.001
     print("=" * 70)
     
     try:
@@ -520,8 +538,13 @@ def main(version_type="incremental"):
             print("❌ Error en la verificación del dataset")
             return
         
-        # 6. Entrenar modelo (parámetros optimizados para GTX 960M)
-        results = trainer.train_model(epochs=100, batch_size=8)  # Batch size ajustado para 3GB VRAM
+        # 6. Entrenar modelo con configuración dinámica
+        if is_logo_model:
+            print("🎯 Entrenando con configuración de fine-tuning (modelo especializado)")
+            results = trainer.train_model(epochs=epochs, batch_size=4, lr_custom=lr)
+        else:
+            print("🔄 Entrenando con configuración estándar")
+            results = trainer.train_model(epochs=epochs, batch_size=4)
         
         # 7. Evaluar modelo
         trainer.evaluate_model()
@@ -547,16 +570,27 @@ def main(version_type="incremental"):
 
 
 if __name__ == "__main__":
-    # Configurar tipo de versionado
-    # Opciones: "timestamp", "incremental"
-    version_type = "timestamp"  # Cambiar por "incremental" si prefieres v1, v2, v3...
+    # Configuración por defecto
+    version_type = "timestamp"  # "timestamp" o "incremental"
+    model_path = "yolov8m.pt"   # Modelo por defecto
     
-    # También se puede pasar como argumento de línea de comandos
+    # También se pueden pasar como argumentos de línea de comandos
+    # Ejemplo: python main.py timestamp yolov8n-logo.pt
     if len(sys.argv) > 1:
         if sys.argv[1] in ["timestamp", "incremental"]:
             version_type = sys.argv[1]
         else:
-            print("⚠️ Tipo de versionado no válido. Usando 'timestamp' por defecto.")
-            print("   Opciones válidas: timestamp, incremental")
+            # Si el primer argumento no es un tipo de versión, asumimos que es un modelo
+            model_path = sys.argv[1]
+            
+    if len(sys.argv) > 2:
+        # Segundo argumento es el modelo
+        model_path = sys.argv[2]
     
-    main(version_type=version_type)
+    print(f"🚀 Configuración de arranque:")
+    print(f"   📅 Tipo de versionado: {version_type}")
+    print(f"   🤖 Modelo seleccionado: {model_path}")
+    print(f"   📝 Uso: python main.py [timestamp|incremental] [modelo.pt]")
+    print()
+    
+    main(version_type=version_type, model_path=model_path)
