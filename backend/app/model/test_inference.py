@@ -1,39 +1,51 @@
 import cv2
-from inference import predict_brand, postprocess
+from backend.app.model.inference import LogoDetector
 
 def main():
     video_path = "videos_descargados/video_2e7c397a.mp4"
     cap = cv2.VideoCapture(video_path)
 
-    frame_count = 0
-    detections_total = []
-    block_size = 50   # nº de frames por bloque
-    max_blocks = 20   # seguridad: no más de 20 bloques (1000 frames)
+    if not cap.isOpened():
+        print(f"❌ No se pudo abrir el vídeo: {video_path}")
+        return
 
-    while cap.isOpened() and len(detections_total) == 0 and (frame_count // block_size) < max_blocks:
-        print(f"\n🔍 Revisando frames {frame_count} → {frame_count + block_size}...")
-        block_detections = []
+    detector = LogoDetector()
+    frame_count, detections_total = 0, []
 
-        for i in range(block_size):
-            ret, frame = cap.read()
-            if not ret:
-                break
+    print(f"🎥 Analizando {video_path}...\n")
 
-            preds = predict_brand(frame)
-            results = postprocess(preds, conf_threshold=0.001)  # umbral bajo para debug
-            if results:
-                print(f"✅ Frame {frame_count+i}: {results}")
-                block_detections.extend(results)
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frame_count += 1
 
-        detections_total.extend(block_detections)
-        frame_count += block_size
+        detections = detector.predict_frame(frame, conf=0.25, iou=0.6)
+        if detections:
+            print(f"✅ Frame {frame_count}: {len(detections)} detección(es)")
+            for det in detections:
+                print(f"   🏷️ {det['class']} | "
+                      f"Conf: {det['confidence']:.2f} | "
+                      f"BBox: {det['bbox']}")
+            detections_total.extend(detections)
+
+        # ⚡ Solo procesar los primeros 200 frames para no tardar demasiado
+        if frame_count >= 200:
+            break
 
     cap.release()
 
+    print("\n📊 RESUMEN")
+    print(f"Total de frames analizados: {frame_count}")
+    print(f"Total de detecciones: {len(detections_total)}")
+
     if detections_total:
-        print(f"\n🎯 Encontradas {len(detections_total)} detecciones en {frame_count} frames")
-    else:
-        print("\n⚠️ No se detectó nada en los primeros", frame_count, "frames")
+        brands = {}
+        for d in detections_total:
+            brands[d["class"]] = brands.get(d["class"], 0) + 1
+        print("Detecciones por marca:")
+        for brand, count in brands.items():
+            print(f"   {brand}: {count}")
 
 if __name__ == "__main__":
     main()
