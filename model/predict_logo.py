@@ -7,7 +7,7 @@ Soporta:
 - Predicciones en archivos de video
 - Predicciones en tiempo real con webcam
 
-Autor: Copilot
+Autor: Juan Carlos Macías / Copilot
 Fecha: Agosto 2025
 """
 

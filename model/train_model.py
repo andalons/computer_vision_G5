@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Script para entrenar YOLO11s con logos de marcas deportivas
-Autor: Copilot
+Autor: Juan Carlos Macías / Copilot
 Fecha: Agosto 2025
 """
 
