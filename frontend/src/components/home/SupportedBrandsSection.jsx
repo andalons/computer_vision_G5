@@ -1,15 +1,11 @@
 import React from 'react';
 import nikelogo from '../../assets/logos/nike.png';
 import adidaslogo from '../../assets/logos/adidas.png';
-import asicslogo from '../../assets/logos/asics.png';
-import newbalancelogo from '../../assets/logos/new-balance.png';
 
 const SupportedBrandsSection = () => {
   const supportedBrands = [
     { name: 'Nike', logo: nikelogo },
-    { name: 'Adidas', logo: adidaslogo },
-    { name: 'Asics', logo: asicslogo },
-    { name: 'New Balance', logo: newbalancelogo }
+    { name: 'Adidas', logo: adidaslogo }
   ];
 
   return (
@@ -22,12 +18,12 @@ const SupportedBrandsSection = () => {
           Specialized AI models trained for these major athletic brands
         </p>
       </div>
-      
+
       {/* Full width para movimiento infinito */}
       <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden">
         <div className="flex animate-slide-infinite">
-          {/* Bucle de logos infinitos */}
-          {Array(4).fill(supportedBrands).flat().map((brand, index) => (
+          {/* Bucle de logos infinitos - más repeticiones para compensar menos marcas */}
+          {Array(8).fill(supportedBrands).flat().map((brand, index) => (
             <div key={index} className="flex items-center justify-center flex-shrink-0 h-32 p-6 mx-3 bg-white sm:h-40 w-72 sm:w-96 sm:mx-6 rounded-card shadow-soft">
               <img
                 src={brand.logo}
@@ -38,7 +34,7 @@ const SupportedBrandsSection = () => {
           ))}
         </div>
       </div>
-      
+
       <div className="mt-8 text-center">
         <span className="inline-flex items-center px-6 py-3 text-sm font-medium text-white rounded-full bg-lila-500 font-source">
           More brands coming soon
@@ -55,12 +51,10 @@ const SupportedBrandsSection = () => {
             transform: translateX(-25%);
           }
         }
-        
         .animate-slide-infinite {
-          animation: slide-infinite 25s linear infinite;
+          animation: slide-infinite 20s linear infinite;
           width: 400%;
         }
-
         .animate-slide-infinite:hover {
           animation-play-state: paused;
         }

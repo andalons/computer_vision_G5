@@ -11,7 +11,7 @@ const PricingSection = () => {
         '50 video analyses/month',
         'Basic reporting',
         'Email support',
-        '4 supported brands'
+        '2 supported brands'
       ],
       cta: 'Start Free Trial',
       popular: false

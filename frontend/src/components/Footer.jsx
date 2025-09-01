@@ -25,7 +25,7 @@ const Footer = () => {
     { name: 'Contact Sales', path: '#' }
   ];
 
-  const supportedLogos = ['Nike', 'Adidas', 'Asics', 'New Balance'];
+  const supportedLogos = ['Nike', 'Adidas'];
 
   return (
     <footer className="mt-auto text-white bg-petroleo-500">
@@ -57,7 +57,7 @@ const Footer = () => {
                   </span>
                 ))}
                 <span className="px-3 py-1 text-xs font-medium text-white rounded-full bg-lila-500">
-                  More soon
+                  More brands soon
                 </span>
               </div>
             </div>
