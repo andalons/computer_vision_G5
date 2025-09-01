@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import FormInput from '../components/analysis/FormInput';
 import StartAnalysisButton from '../components/analysis/StartAnalysisButton';
+import AnalysisResults from '../components/analysis/AnalysisResults';
 
 const LinkAnalysis = () => {
   const formRef = useRef();
@@ -51,7 +52,7 @@ const LinkAnalysis = () => {
           </p>
         </div>
 
-        {/* Contendor principal formulario */}
+        {/* Contenedor principal formulario */}
         <div className="relative p-12 mb-12 bg-white rounded-card shadow-strong">
           <div className="relative max-w-6xl mx-auto">
             
