@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Upload, Check } from 'lucide-react';
 import { prepareVideo, getStreamUrl } from '../../services/AnalysisService';
-import { saveVideoInfo, getVideoMetrics } from '../../services/DatabaseService';
+import { saveVideoInfo, getVideoMetrics, analyzeVideo } from '../../services/DatabaseService';
 
 const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +53,7 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
       
       // Paso 3: Analyzing
       setCurrentStep(2);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Intentar obtener métricas reales
       const videoId = videoResponse.supabase_record.id;
@@ -72,6 +72,16 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
           contract_compliant: false
         };
       }
+
+      // Realizar análisis de screenshots
+      let screenshotsData = null;
+      try {
+        screenshotsData = await analyzeVideo(videoId);
+        console.log('Screenshots generados:', screenshotsData);
+      } catch (error) {
+        console.warn('Error generando screenshots:', error);
+        // Continuar sin screenshots por ahora
+      }
       
       // Paso 4: Complete
       setCurrentStep(3);
@@ -85,7 +95,8 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
             technical_info: videoResponse.technical_info
           },
           metrics: metricsData,
-          formData: formData
+          formData: formData,
+          screenshots: screenshotsData
         });
       }
       

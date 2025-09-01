@@ -3,16 +3,33 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import DetectionCarousel from './DetectionCarousel';
 import MetricsPanel from './MetricsPanel';
 
-const AnalysisResults = ({ videoData, metrics, formData, onReset }) => {
+const AnalysisResults = ({ videoData, metrics, formData, screenshots, onReset }) => {
   const [currentFrame, setCurrentFrame] = useState(0);
   
-  // Placeholder frames data - reemplazar con datos reales de BD
-  const detectionFrames = [
-    { id: 1, timestamp: '0:23', confidence: 97, brand: 'Nike' },
-    { id: 2, timestamp: '1:15', confidence: 94, brand: 'Nike' },
-    { id: 3, timestamp: '2:08', confidence: 96, brand: 'Nike' },
-    { id: 4, timestamp: '2:45', confidence: 93, brand: 'Nike' }
-  ];
+  // Transformar screenshots reales o usar placeholder
+  const detectionFrames = screenshots?.screenshots ? 
+    screenshots.screenshots.map((screenshot, index) => {
+      // Extraer información del nombre del archivo o usar datos por defecto
+      const frameNumber = screenshot.match(/_frame(\d+)\.jpg$/)?.[1] || index + 1;
+      const timestamp = `${Math.floor(frameNumber / 30 / 60)}:${Math.floor((frameNumber / 30) % 60).toString().padStart(2, '0')}`;
+      
+      return {
+        id: index + 1,
+        timestamp: timestamp,
+        confidence: Math.round(metrics?.confidence_score || 0), // Usar dato real o 0
+        brand: metrics?.brand || formData.brand || 'N/A',
+        imageUrl: screenshot.replace('runs/debug_frames/', 'http://localhost:8000/screenshots/'), // Convertir path a URL
+        screenPercentage: Math.round(metrics?.average_area_percentage || 0), // Usar dato real o 0
+        framePath: screenshot
+      };
+    }) :
+    // Fallback a datos placeholder si no hay screenshots
+    [
+      { id: 1, timestamp: '0:23', confidence: Math.round(metrics?.confidence_score || 0), brand: metrics?.brand || formData.brand, screenPercentage: Math.round(metrics?.average_area_percentage || 0) },
+      { id: 2, timestamp: '1:15', confidence: Math.round(metrics?.confidence_score || 0), brand: metrics?.brand || formData.brand, screenPercentage: Math.round(metrics?.average_area_percentage || 0) },
+      { id: 3, timestamp: '2:08', confidence: Math.round(metrics?.confidence_score || 0), brand: metrics?.brand || formData.brand, screenPercentage: Math.round(metrics?.average_area_percentage || 0) },
+      { id: 4, timestamp: '2:45', confidence: Math.round(metrics?.confidence_score || 0), brand: metrics?.brand || formData.brand, screenPercentage: Math.round(metrics?.average_area_percentage || 0) }
+    ];
 
   const nextFrame = () => {
     setCurrentFrame(prev => (prev + 1) % detectionFrames.length);
@@ -75,6 +92,7 @@ const AnalysisResults = ({ videoData, metrics, formData, onReset }) => {
               setCurrentFrame={setCurrentFrame}
               nextFrame={nextFrame}
               prevFrame={prevFrame}
+              hasRealImages={!!screenshots?.screenshots}
             />
           </div>
 

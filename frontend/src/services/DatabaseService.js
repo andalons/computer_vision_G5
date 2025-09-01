@@ -46,3 +46,18 @@ export const getVideoMetrics = async (videoId) => {
     throw error;
   }
 };
+
+// Analizar video y generar screenshots
+export const analyzeVideo = async (videoId) => {
+  if (!videoId) {
+    throw new Error('ID del video requerido');
+  }
+
+  try {
+    const response = await api.post(`/db/analyze-video/${videoId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al analizar video:', error);
+    throw error;
+  }
+};

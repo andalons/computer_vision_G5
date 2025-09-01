@@ -9,11 +9,13 @@ const LinkAnalysis = () => {
   const [videoData, setVideoData] = useState(null);
   const [metrics, setMetrics] = useState(null);
   const [formData, setFormData] = useState(null);
+  const [screenshots, setScreenshots] = useState(null);
 
   const handleAnalysisComplete = (data) => {
     setVideoData(data.videoData);
     setMetrics(data.metrics);
     setFormData(data.formData);
+    setScreenshots(data.screenshots);
     setAnalysisComplete(true);
   };
 
@@ -22,6 +24,7 @@ const LinkAnalysis = () => {
     setVideoData(null);
     setMetrics(null);
     setFormData(null);
+    setScreenshots(null);
     if (formRef.current) {
       formRef.current.resetForm();
     }
@@ -33,6 +36,7 @@ const LinkAnalysis = () => {
         videoData={videoData}
         metrics={metrics}
         formData={formData}
+        screenshots={screenshots}
         onReset={resetAnalysis}
       />
     );
