@@ -100,7 +100,6 @@ def create_metric(metric: VideoMetricCreate):
 def list_metrics(video_id: str):
     return get_metrics_for_video(video_id)
 
-
 # -------------------------------
 # Analyze video with YOLO and save metrics
 # -------------------------------
@@ -108,7 +107,7 @@ def list_metrics(video_id: str):
 def analyze_video_and_save_metrics(video_id: str):
     """
     Analyze a stored video with YOLO, calculate metrics,
-    save them into Supabase, and export 4 frames with detections.
+    save them into Supabase, and export up to 4 spaced frames with detections.
     """
     # 1. Fetch video from Supabase
     video = supabase.table("videos").select("*").eq("id", video_id).execute().data
@@ -124,13 +123,18 @@ def analyze_video_and_save_metrics(video_id: str):
     detector = LogoDetector()
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_count_total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))  # total frames
     frame_count, detections_total = 0, []
-    saved_frames = 0
     output_dir = "runs/debug_frames"
     os.makedirs(output_dir, exist_ok=True)
     screenshot_paths = []
 
-    frame_height, frame_width = None, None # Inicializar dimensiones del frame
+    frame_height, frame_width = None, None  # Initialize frame dimensions
+
+    # calcular intervalos para 4 tramos
+    max_screenshots = 4
+    save_interval = max(1, frame_count_total // max_screenshots)
+    next_save_frame = save_interval  # primer umbral
 
     # 3. Loop through frames
     while cap.isOpened():
@@ -139,7 +143,6 @@ def analyze_video_and_save_metrics(video_id: str):
             break
         frame_count += 1
 
-        # guardar dimensiones del primer frame válido
         if frame_height is None or frame_width is None:
             frame_height, frame_width = frame.shape[:2]
 
@@ -147,7 +150,8 @@ def analyze_video_and_save_metrics(video_id: str):
         if detections:
             detections_total.extend(detections)
 
-            if saved_frames < 4:
+            # guardar solo la primera detección encontrada después del umbral
+            if len(screenshot_paths) < max_screenshots and frame_count >= next_save_frame:
                 for det in detections:
                     x1, y1, x2, y2 = det["bbox"]
                     label = f"{det['class']} {det['confidence']:.2f}"
@@ -159,7 +163,9 @@ def analyze_video_and_save_metrics(video_id: str):
                 out_path = os.path.join(output_dir, f"{video_id}_frame{frame_count}.jpg")
                 cv2.imwrite(out_path, frame)
                 screenshot_paths.append(out_path)
-                saved_frames += 1
+
+                # mover el umbral al siguiente tramo
+                next_save_frame += save_interval
 
     cap.release()
 
@@ -177,7 +183,7 @@ def analyze_video_and_save_metrics(video_id: str):
 
     metric_record = {
         "video_id": video_id,
-        "brand": detections_total[0]["class"],  # simplificación: primera marca detectada
+        "brand": detections_total[0]["class"], 
         "total_time_seconds": total_time,
         "percentage_time": total_time / video_duration * 100,
         "average_area_percentage": avg_area * 100,
