@@ -1,0 +1,222 @@
+import React, { useState } from 'react';
+import { Upload } from 'lucide-react';
+
+const FormInput = () => {
+  const [formData, setFormData] = useState({
+    url: '',
+    brand: '',
+    contract_price: '',
+    min_brand_time: '',
+    min_logo_area: ''
+  });
+  
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const validateField = (name, value) => {
+    const errors = {};
+    
+    switch (name) {
+      case 'url':
+        if (!value.trim()) {
+          errors.url = 'Video URL is required';
+        } else if (!value.match(/^https?:\/\/.+/)) {
+          errors.url = 'Please enter a valid URL';
+        }
+        break;
+      case 'brand':
+        if (!value.trim()) {
+          errors.brand = 'Please select a brand to detect';
+        }
+        break;
+        if (!value.trim()) {
+          errors.contract_price = 'Contract price is required';
+        } else if (isNaN(value) || parseFloat(value) <= 0) {
+          errors.contract_price = 'Please enter a valid amount';
+        }
+        break;
+      case 'min_brand_time':
+        if (!value.trim()) {
+          errors.min_brand_time = 'Minimum time is required';
+        } else if (isNaN(value) || parseInt(value) <= 0) {
+          errors.min_brand_time = 'Please enter a valid duration';
+        }
+        break;
+      case 'min_logo_area':
+        if (!value.trim()) {
+          errors.min_logo_area = 'Minimum area is required';
+        } else if (isNaN(value) || parseFloat(value) <= 0) {
+          errors.min_logo_area = 'Please enter a valid percentage';
+        }
+        break;
+    }
+    
+    return errors;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // Limpiar errores del campo cuando el usuario empiece a escribir
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  return (
+    <>
+      {/* Sección URL Input */}
+      <div className="mb-12">
+        <div className="flex items-center mb-6">
+          <div className="flex items-center justify-center w-12 h-12 mr-4 rounded-card bg-coral-500/10">
+            <Upload className="w-6 h-6 text-coral-500" />
+          </div>
+          <label className="text-2xl font-bold font-montserrat text-petroleo-500">
+            Collaboration Video Link *
+          </label>
+        </div>
+        <input
+          type="url"
+          name="url"
+          value={formData.url}
+          onChange={handleInputChange}
+          placeholder="Insert the link to your brand collaboration video"
+          className={`w-full px-8 py-6 text-xl transition-all duration-300 border-2 rounded-card font-source text-petroleo-500 placeholder-petroleo-300 focus:outline-none focus:ring-0 ${
+            fieldErrors.url 
+              ? 'border-coral-500 focus:border-coral-600' 
+              : 'border-petroleo-200 focus:border-coral-500 focus:shadow-coral'
+          }`}
+        />
+        {fieldErrors.url && (
+          <p className="mt-2 text-sm font-medium font-source text-coral-500">{fieldErrors.url}</p>
+        )}
+        <div className="flex items-center mt-4">
+          <div className="w-2 h-2 mr-3 rounded-full bg-mostaza-500"></div>
+          <p className="text-lg font-source text-petroleo-300">
+            We support videos from YouTube and TikTok
+          </p>
+        </div>
+      </div>
+
+      {/* Seccion de precio de contrato */}
+      <div className="grid grid-cols-1 gap-12 mb-12 lg:grid-cols-2">
+        <div className="p-8 rounded-card bg-gradient-to-br from-humo-600 to-humo-400">
+          <label className="block mb-6 text-2xl font-bold font-montserrat text-petroleo-500">
+            Contract Value *
+          </label>
+          <div className="relative">
+            <span className="absolute text-xl transform -translate-y-1/2 left-6 top-1/2 font-source text-petroleo-400">€</span>
+            <input
+              type="number"
+              name="contract_price"
+              value={formData.contract_price}
+              onChange={handleInputChange}
+              placeholder="Enter contract amount"
+              className={`w-full py-4 pl-12 pr-6 text-xl transition-all duration-300 border-2 rounded-card font-source text-petroleo-500 placeholder-petroleo-300 focus:outline-none focus:ring-0 ${
+                fieldErrors.contract_price 
+                  ? 'border-coral-500 focus:border-coral-600' 
+                  : 'border-transparent focus:border-mostaza-500 focus:shadow-medium'
+              }`}
+            />
+          </div>
+          {fieldErrors.contract_price && (
+            <p className="mt-2 text-sm font-medium font-source text-coral-500">{fieldErrors.contract_price}</p>
+          )}
+        </div>
+        
+        {/* Selección de marca */}
+        <div className="p-8 rounded-card bg-gradient-to-br from-humo-600 to-humo-400">
+          <label className="block mb-6 text-2xl font-bold font-montserrat text-petroleo-500">
+            Brand to Detect *
+          </label>
+          <select
+            name="brand"
+            value={formData.brand}
+            onChange={handleInputChange}
+            className={`w-full px-6 py-4 text-xl transition-all duration-300 border-2 rounded-card font-source text-petroleo-500 focus:outline-none focus:ring-0 ${
+              fieldErrors.brand 
+                ? 'border-coral-500 focus:border-coral-600' 
+                : 'border-transparent focus:border-lila-500 focus:shadow-lila'
+            }`}
+          >
+            <option value="">Select a brand to detect</option>
+            <option value="Nike">Nike</option>
+            <option value="Adidas">Adidas</option>
+          </select>
+          {fieldErrors.brand && (
+            <p className="mt-2 text-sm font-medium font-source text-coral-500">{fieldErrors.brand}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Requisitos de contrato */}
+      <div className="p-10 mb-12 bg-gradient-to-br from-petroleo-500 to-petroleo-600 rounded-card shadow-strong">
+        <h3 className="mb-8 text-2xl font-bold text-white font-montserrat">
+          Contract Requirements
+        </h3>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          
+          {/* Tiempo de exposición mínimo de la marca */}
+          <div>
+            <label className="block mb-4 text-xl font-medium text-white font-source">
+              Minimum Brand Exposure Time *
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                name="min_brand_time"
+                value={formData.min_brand_time}
+                onChange={handleInputChange}
+                placeholder="Enter minimum seconds"
+                className={`w-full px-6 py-4 pr-20 text-xl transition-all duration-300 bg-white border-2 rounded-card font-source text-petroleo-500 placeholder-petroleo-300 focus:outline-none focus:ring-0 ${
+                  fieldErrors.min_brand_time 
+                    ? 'border-coral-500 focus:border-coral-600' 
+                    : 'border-transparent focus:border-coral-500 focus:shadow-coral'
+                }`}
+              />
+              <span className="absolute text-xl transform -translate-y-1/2 right-6 top-1/2 font-source text-petroleo-400">sec</span>
+            </div>
+            {fieldErrors.min_brand_time && (
+              <p className="mt-2 text-sm font-medium text-coral-300">{fieldErrors.min_brand_time}</p>
+            )}
+          </div>
+
+          {/* Mínimo área de logo de la marca */}
+          <div>
+            <label className="block mb-4 text-xl font-medium text-white font-source">
+              Minimum Logo Screen Coverage *
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                step="0.1"
+                name="min_logo_area"
+                value={formData.min_logo_area}
+                onChange={handleInputChange}
+                placeholder="Enter minimum percentage"
+                className={`w-full px-6 py-4 pr-16 text-xl transition-all duration-300 bg-white border-2 rounded-card font-source text-petroleo-500 placeholder-petroleo-300 focus:outline-none focus:ring-0 ${
+                  fieldErrors.min_logo_area 
+                    ? 'border-coral-500 focus:border-coral-600' 
+                    : 'border-transparent focus:border-lila-500 focus:shadow-lila'
+                }`}
+              />
+              <span className="absolute text-xl transform -translate-y-1/2 right-6 top-1/2 font-source text-petroleo-400">%</span>
+            </div>
+            {fieldErrors.min_logo_area && (
+              <p className="mt-2 text-sm font-medium text-coral-300">{fieldErrors.min_logo_area}</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default FormInput;
