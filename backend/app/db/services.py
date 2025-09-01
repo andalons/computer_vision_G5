@@ -2,8 +2,8 @@
 Database service layer for videos and metrics
 """
 
-from .supabase_client import supabase
-from .models import VideoCreate, VideoMetricCreate
+from backend.app.db.supabase_client import supabase
+from backend.app.db.models import VideoCreate, VideoMetricCreate
 from typing import List, Optional
 
 def insert_video(video_data: dict):
@@ -16,7 +16,7 @@ def get_all_videos() -> List[dict]:
     return response.data or []
 
 def insert_video_metric(metric: VideoMetricCreate) -> Optional[dict]:
-    response = supabase.table("video_metrics").insert(metric.dict()).execute()
+    response = supabase.table("video_metrics").insert(metric).execute()
     if response.data:
         return response.data[0]
     return None
