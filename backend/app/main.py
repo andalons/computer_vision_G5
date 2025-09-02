@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Procesado de video para su análisis con un modelo de visión artificial
 Ahora usando el sistema core centralizado
@@ -10,11 +9,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import uuid
 
 # Intentar importar del core, si falla usar configuración de respaldo
 try:
-    from .core import (
-        core, API_CONFIG, CORS_CONFIG, VideoRequest, 
+    from backend.app.core import (
+        core, API_CONFIG, CORS_CONFIG, VideoRequest,
         get_current_video_path, set_current_video_path,
         get_video_info, set_video_info,
         get_stream_config, update_stream_config,
@@ -60,10 +60,10 @@ except ImportError as e:
         delay_frames: float = 0.033
         delete_after_processing: bool = True  # Por defecto, eliminar después del procesamiento
 
-from .download_video import download_video
-from .analyze_video import get_complete_video_info
-from .process_local_video import generate_video_stream
-from .db.routes import router as db_router
+from backend.app.download_video import download_video
+from backend.app.analyze_video import get_complete_video_info
+from backend.app.process_local_video import generate_video_stream
+from backend.app.db.routes import router as db_router
 
 import uuid
 
