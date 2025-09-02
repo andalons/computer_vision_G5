@@ -187,14 +187,14 @@ const FormInput = forwardRef((props, ref) => {
               name="min_brand_time"
               value={formData.min_brand_time}
               onChange={handleInputChange}
-              placeholder="Enter minimum seconds"
-              className={`w-full px-6 py-4 pr-20 text-xl transition-all duration-300 bg-white border-2 rounded-card font-source text-petroleo-500 placeholder-petroleo-300 focus:outline-none focus:ring-0 ${
+              placeholder="Enter min. seconds"
+              className={`w-full px-6 py-4 pr-14 text-xl transition-all duration-300 bg-white border-2 rounded-card font-source text-petroleo-500 placeholder-petroleo-300 focus:outline-none focus:ring-0 ${
                 fieldErrors.min_brand_time 
                   ? 'border-coral-500 focus:border-coral-600' 
                   : 'border-transparent focus:border-coral-500 focus:shadow-coral'
               }`}
             />
-            <span className="absolute text-xl transform -translate-y-1/2 right-6 top-1/2 font-source text-petroleo-400">sec</span>
+            <span className="absolute text-xl transform -translate-y-1/2 right-4 top-1/2 font-source text-petroleo-500">sec</span>
           </div>
           {fieldErrors.min_brand_time && (
             <p className="mt-2 text-sm font-medium text-coral-300">{fieldErrors.min_brand_time}</p>

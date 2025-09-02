@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { listVideos, getVideoMetrics } from '../services/DatabaseService';
 import RoiHeader from '../components/roi/RoiHeader';
+import RoiSummaryStats from '../components/roi/RoiSummaryStats';
 
 const RoiReport = () => {
   const [videos, setVideos] = useState([]);
@@ -77,12 +78,15 @@ const RoiReport = () => {
     <div className="min-h-screen pt-32 pb-20 bg-humo-500">
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
         
-        {/* Header with filters */}
+        {/* Header con filtros */}
         <RoiHeader 
           filters={filters} 
           metrics={metrics}
           onFilteredDataChange={handleFilteredDataChange} 
         />
+
+        {/* Sumario de datos filtrados */}
+        <RoiSummaryStats filteredData={filteredData} />
 
       </div>
     </div>
