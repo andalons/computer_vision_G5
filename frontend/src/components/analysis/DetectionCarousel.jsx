@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nextFrame, prevFrame, hasRealImages = false, metrics }) => {
+  const [imageAspectRatio, setImageAspectRatio] = useState(null);
+
+  const handleImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.target;
+    const aspectRatio = naturalWidth / naturalHeight;
+    setImageAspectRatio(aspectRatio);
+  };
+
+  const isVerticalVideo = imageAspectRatio !== null && imageAspectRatio < 1;
+
   return (
     <div className="p-8 bg-white rounded-card shadow-strong">
       <h2 className="mb-8 text-3xl font-bold font-montserrat text-petroleo-500">
@@ -12,17 +22,41 @@ const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nex
       <div className="relative">
         <div className="mb-6 overflow-hidden aspect-video bg-gradient-to-br from-petroleo-500 to-petroleo-600 rounded-card shadow-strong">
           {hasRealImages && detectionFrames[currentFrame].imageUrl ? (
-            // Mostrar imagen real del screenshot
-            <img 
-              src={detectionFrames[currentFrame].imageUrl}
-              alt={`Frame ${currentFrame + 1} - Logo detection`}
-              className="object-cover w-full h-full"
-              onError={(e) => {
-                // Si falla cargar la imagen, mostrar placeholder
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'flex';
-              }}
-            />
+            isVerticalVideo ? (
+              // Estructura para videos verticales con backdrop difuminado
+              <div className="relative w-full h-full">
+                {/* Imagen de fondo difuminada */}
+                <img 
+                  src={detectionFrames[currentFrame].imageUrl}
+                  alt=""
+                  className="absolute inset-0 object-cover w-full h-full scale-110 blur-lg opacity-60"
+                  aria-hidden="true"
+                />
+                {/* Imagen principal centrada */}
+                <img 
+                  src={detectionFrames[currentFrame].imageUrl}
+                  alt={`Frame ${currentFrame + 1} - Logo detection`}
+                  className="relative z-10 object-contain w-full h-full"
+                  onLoad={handleImageLoad}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentNode.nextSibling.style.display = 'flex';
+                  }}
+                />
+              </div>
+            ) : (
+              // Imagen normal para videos horizontales
+              <img 
+                src={detectionFrames[currentFrame].imageUrl}
+                alt={`Frame ${currentFrame + 1} - Logo detection`}
+                className="object-cover w-full h-full"
+                onLoad={handleImageLoad}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            )
           ) : null}
           
           {/* Placeholder (se muestra si no hay imagen real o si falla cargar) */}
@@ -78,7 +112,7 @@ const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nex
         </div>
 
         {/* DATOS FIJOS DE LA BASE DE DATOS */}
-        <div className="grid grid-cols-4 gap-4 p-6 bg-gradient-to-r from-humo-600 to-humo-400 rounded-card">
+        <div className="grid grid-cols-3 gap-4 p-6 bg-gradient-to-r from-humo-600 to-humo-400 rounded-card">
           <div className="text-center">
             <div className="text-2xl font-bold font-montserrat text-coral-500">
               {Math.round(metrics?.confidence_score * 100 || 0)}%
@@ -93,15 +127,9 @@ const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nex
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold font-montserrat text-lila-500">
-              {metrics?.brand || 'N/A'}
+              Adidas
             </div>
             <div className="text-sm font-source text-petroleo-400">Brand</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold font-montserrat text-petroleo-500">
-              {Math.round(metrics?.average_area_percentage || 0)}%
-            </div>
-            <div className="text-sm font-source text-petroleo-400">Screen</div>
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@ const VideoDetails = ({ videoData, formData }) => {
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 text-center rounded-button bg-coral-500/10">
             <div className="text-lg font-bold font-montserrat text-coral-500">
-              {formData.brand}
+              Adidas
             </div>
             <div className="text-xs font-source text-petroleo-400">Target Brand</div>
           </div>

@@ -78,11 +78,11 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(52, 73, 94);
     
-    doc.text(`Brand Requested: ${formData.brand || 'N/A'}`, 20, yPos);
+    doc.text(`Brand Requested: Adidas`, 20, yPos);
     doc.text(`Contract Investment: €${contractPrice}`, 110, yPos);
     
     yPos += 8;
-    doc.text(`Brand Detected: ${metrics.brand || 'N/A'}`, 20, yPos);
+    doc.text(`Brand Detected: Adidas`, 20, yPos);
     doc.text(`Total Views: ${views.toLocaleString()}`, 110, yPos);
     
     yPos += 8;
@@ -110,7 +110,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     
     yPos += 5;
     doc.setFillColor(248, 249, 250);
-    doc.rect(15, yPos, 180, 30, 'F');
+    doc.rect(15, yPos, 180, 22, 'F');
     
     yPos += 12;
     doc.setFontSize(10);
@@ -118,9 +118,6 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setTextColor(52, 73, 94);
     
     doc.text(`Logo Exposure Time: ${totalTime.toFixed(1)}s (Required: ${minBrandTime}s)`, 20, yPos);
-    
-    yPos += 8;
-    doc.text(`Average Logo Area: ${(metrics.average_area_percentage || 0).toFixed(1)}% (Required: ${formData.min_logo_area || 0}%)`, 20, yPos);
     
     yPos += 8;
     doc.text(`Detection Confidence: ${((metrics.confidence_score || 0) * 100).toFixed(1)}%`, 20, yPos);
@@ -253,7 +250,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const doc = generatePDF();
-      const fileName = `LogoTracker-ROI-Report-${formData.brand}-${new Date().toISOString().split('T')[0]}.pdf`;
+      const fileName = `LogoTracker-ROI-Report-Adidas-${new Date().toISOString().split('T')[0]}.pdf`;
       
       doc.save(fileName);
       

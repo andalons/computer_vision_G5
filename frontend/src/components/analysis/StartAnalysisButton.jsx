@@ -38,8 +38,7 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
         url: formData.url.trim(),
         brand: formData.brand,
         contract_price: parseFloat(formData.contract_price),
-        min_brand_time: parseInt(formData.min_brand_time),
-        min_logo_area: parseFloat(formData.min_logo_area)
+        min_brand_time: parseInt(formData.min_brand_time)
       });
 
       console.log('Video guardado:', videoResponse);
@@ -88,13 +87,9 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
         metricsData = analysisResult.metrics;
       }
 
-      // Verificar compliance del contrato
+      // Verificar compliance del contrato basado únicamente en tiempo
       const minBrandTime = parseInt(formData.min_brand_time);
-      const minLogoArea = parseFloat(formData.min_logo_area);
-      const contractCompliant = (
-        (metricsData.total_time_seconds >= minBrandTime) && 
-        (metricsData.average_area_percentage >= minLogoArea)
-      );
+      const contractCompliant = (metricsData.total_time_seconds >= minBrandTime);
 
       // Agregar información de compliance a las métricas
       metricsData.contract_compliant = contractCompliant;

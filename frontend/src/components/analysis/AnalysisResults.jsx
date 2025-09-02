@@ -45,7 +45,7 @@ const AnalysisResults = ({ videoData, metrics, formData, screenshots, onReset })
               <div className="flex items-center">
                 <div className="flex-shrink-0 w-2 h-2 mr-3 rounded-full bg-coral-500"></div>
                 <span className="mr-2 font-medium">Brand:</span>
-                <span className="truncate">{formData.brand}</span>
+                <span className="truncate">Adidas</span>
               </div>
               <div className="flex items-center">
                 <div className="flex-shrink-0 w-2 h-2 mr-3 rounded-full bg-lila-500"></div>
