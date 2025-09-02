@@ -1,0 +1,21 @@
+# Dockerignore raíz
+.git/
+.gitignore
+.env
+.env.example
+.DS_Store
+README.md
+docker-compose.yml
+*.md
+.vscode/
+.idea/
+temp/
+tmp/
+logs/
+*.log
+node_modules/
+__pycache__/
+*.pyc
+dist/
+build/
+coverage/
