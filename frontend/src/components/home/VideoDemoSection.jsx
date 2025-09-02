@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Check } from 'lucide-react';
+import videoDemo from '../../assets/videos/video-demo.mp4';
 
 const VideoDemoSection = () => {
   const videoRef = useRef(null);
@@ -18,14 +18,16 @@ const VideoDemoSection = () => {
         <div className="relative max-w-4xl mx-auto">
           <div className="overflow-hidden aspect-video bg-petroleo-400 rounded-card shadow-strong">
             <video
-              ref={videoRef}
-              className="object-cover w-full h-full"
-              poster="/api/placeholder/800/450"
-              controls
-            >
-              <source src="/assets/videos/demo-detection.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+                ref={videoRef}
+                className="object-cover w-full h-full"
+                poster="/api/placeholder/800/450"
+                controls
+                autoPlay
+                muted
+                loop
+              >
+                <source src={videoDemo} type="video/mp4" />
+              </video>
           </div>
 
           {/* Barra de estadísticas  */}

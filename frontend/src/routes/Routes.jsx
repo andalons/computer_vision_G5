@@ -11,7 +11,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "link-analysis", element: <LinkAnalysis /> },
-      { path: "statistics", element: <RoiReport /> },
+      { path: "roi-reports", element: <RoiReport /> },
       { path: "*", element: <div>Not Found</div> }
     ]
   }
