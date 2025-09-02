@@ -2,6 +2,9 @@ import cv2
 from ultralytics import YOLO
 from backend.app.model.download_model import get_model_path
 
+# Variable global del detector
+global_detector = None
+
 class LogoDetector:
     def __init__(self):
         model_path = get_model_path()
@@ -31,3 +34,16 @@ class LogoDetector:
                 "bbox": [int(x1), int(y1), int(x2), int(y2)]
             })
         return detections
+
+
+def preload_detector():
+    """
+    Precarga el modelo en memoria para evitar retrasos
+    cuando se llame por primera vez desde el endpoint.
+    """
+    global global_detector
+    if global_detector is None:
+        print("🔄 Precargando modelo YOLO...")
+        global_detector = LogoDetector()
+        print("✅ Modelo YOLO cargado en memoria")
+    return global_detector
