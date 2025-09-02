@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { listVideos, getVideoMetrics } from '../services/DatabaseService';
 import RoiHeader from '../components/roi/RoiHeader';
 import RoiSummaryStats from '../components/roi/RoiSummaryStats';
+import TopPerformers from '../components/roi/TopPerformers';
+import TopEngagement from '../components/roi/TopEngagement';
+import CostEfficiency from '../components/roi/CostEfficiency';
 
 const RoiReport = () => {
   const [videos, setVideos] = useState([]);
@@ -88,6 +91,18 @@ const RoiReport = () => {
         {/* Sumario de datos filtrados */}
         <RoiSummaryStats filteredData={filteredData} />
 
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          
+          {/* Top Influencers por rendimiento */}
+          <TopPerformers filteredData={filteredData} />
+
+          {/* Top Engagement */}
+          <TopEngagement filteredData={filteredData} />
+
+          {/* Mejor costo por segundo */}
+          <CostEfficiency filteredData={filteredData} />
+
+        </div>
       </div>
     </div>
   );

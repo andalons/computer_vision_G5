@@ -37,10 +37,10 @@ const RoiHeader = ({ filters, metrics, onFilteredDataChange }) => {
     <div className="flex flex-col items-start justify-between mb-12 lg:flex-row lg:items-center">
       <div className="mb-6 lg:mb-0">
         <h1 className="mb-4 text-5xl font-bold font-montserrat text-petroleo-500">
-          ROI Dashboard
+          Reports Dashboard
         </h1>
         <p className="text-xl font-source text-petroleo-300">
-          Comprehensive analysis of brand collaboration performance and return on investment
+          Comprehensive analysis of brand collaboration performance and campaign metrics
         </p>
       </div>
       
