@@ -9,7 +9,7 @@ const AnalysisResults = ({ videoData, metrics, formData, screenshots, onReset })
   // Transformar screenshots reales o usar placeholder
   const detectionFrames = screenshots?.screenshots ? 
     screenshots.screenshots.map((screenshot, index) => {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
       return {
         id: index + 1,
         imageUrl: screenshot.replace('runs/debug_frames/', `${API_BASE_URL}/screenshots/`),
@@ -46,7 +46,7 @@ const AnalysisResults = ({ videoData, metrics, formData, screenshots, onReset })
               <div className="flex items-center">
                 <div className="flex-shrink-0 w-2 h-2 mr-3 rounded-full bg-coral-500"></div>
                 <span className="mr-2 font-medium">Brand:</span>
-                <span className="truncate">{formData.brand}</span>
+                <span className="truncate">Adidas</span>
               </div>
               <div className="flex items-center">
                 <div className="flex-shrink-0 w-2 h-2 mr-3 rounded-full bg-lila-500"></div>

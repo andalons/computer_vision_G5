@@ -6,7 +6,7 @@ def get_model_path():
     Descargar (si no existe) el modelo YOLO desde HuggingFace.
     """
     repo_id = "juancmamacias/detect_logo"  
-    filename = "best.pt"                   
+    filename = "logo_detect_nano.onnx"                   
 
     model_path = hf_hub_download(
         repo_id=repo_id,

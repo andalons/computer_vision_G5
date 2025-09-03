@@ -6,7 +6,7 @@ const KeyFeaturesSection = () => {
     {
       icon: Eye,
       title: 'AI Logo Detection',
-      description: 'Advanced computer vision trained specifically for brand logo recognition with 95%+ accuracy rate'
+      description: 'Advanced computer vision trained specifically for brand logo recognition with 98% oprecision and 93% recall'
     },
     {
       icon: Clock,
@@ -16,7 +16,7 @@ const KeyFeaturesSection = () => {
     {
       icon: BarChart3,
       title: 'Detailed Reports',
-      description: 'Comprehensive analytics with exposure time, contract compliance, and ROI calculations'
+      description: 'Comprehensive analytics with exposure time, contract compliance, and detailed reports'
     }
   ];
 

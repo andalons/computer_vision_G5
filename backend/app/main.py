@@ -5,6 +5,7 @@ Ahora usando el sistema core centralizado
 import os
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -65,6 +66,7 @@ from backend.app.download_video import download_video
 from backend.app.analyze_video import get_complete_video_info
 from backend.app.process_local_video import generate_video_stream
 from backend.app.db.routes import router as db_router
+from backend.app.model.inference import preload_detector
 
 import uuid
 
@@ -85,7 +87,25 @@ def get_system_message_fallback(key, default=""):
     }
     return messages.get(key, default)
 
-app = FastAPI(**API_CONFIG)
+
+# ============================
+# Lifespan (startup / shutdown)
+# ============================
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    print("🔄 Precargando modelo YOLO...")
+    preload_detector()
+    print("✅ Modelo YOLO cargado en memoria y listo para usarse")
+    yield
+    # Shutdown
+    print("👋 API de análisis de video detenida.")
+
+
+# Inicializar FastAPI con lifespan
+app = FastAPI(**API_CONFIG, lifespan=lifespan)
 
 # Crear directorio de screenshots si no existe
 screenshots_dir = "runs/debug_frames"
@@ -107,9 +127,9 @@ app.add_middleware(
 
 print("🔧 CORS configurado correctamente")
 
-# El estado ahora se maneja a través del core
-# Variables globales movidas a core/state.py
-# VideoRequest importado desde core
+# ============================
+# Endpoints
+# ============================
 
 @app.get("/")
 async def root():
