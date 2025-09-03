@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { listVideos, getVideoMetrics } from '../services/DatabaseService';
-import RoiHeader from '../components/roi/RoiHeader';
-import RoiSummaryStats from '../components/roi/RoiSummaryStats';
-import TopPerformers from '../components/roi/TopPerformers';
-import TopEngagement from '../components/roi/TopEngagement';
-import CostEfficiency from '../components/roi/CostEfficiency';
+import RoiHeader from '../components/reports/RoiHeader';
+import RoiSummaryStats from '../components/reports/RoiSummaryStats';
+import TopPerformers from '../components/reports/TopPerformers';
+import TopEngagement from '../components/reports/TopEngagement';
+import CostEfficiency from '../components/reports/CostEfficiency';
+import RecentCampaignsTable from '../components/reports/RecentCampaignsTable';
 
-const RoiReport = () => {
+const Report = () => {
   const [videos, setVideos] = useState([]);
   const [metrics, setMetrics] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -103,9 +104,13 @@ const RoiReport = () => {
           <CostEfficiency filteredData={filteredData} />
 
         </div>
+
+          {/* Tabla de campañas recientes */}
+          <RecentCampaignsTable filteredData={filteredData} />
+
       </div>
     </div>
   );
 };
 
-export default RoiReport;
+export default Report;

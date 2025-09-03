@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Euro } from 'lucide-react';
 
 const CostEfficiency = ({ filteredData }) => {
   // Calculate best cost per second internally
@@ -36,7 +36,7 @@ const CostEfficiency = ({ filteredData }) => {
   return (
     <div className="p-8 bg-white rounded-card shadow-strong">
       <div className="flex items-center mb-6">
-        <TrendingUp className="w-6 h-6 mr-3 text-coral-500" />
+        <Euro className="w-6 h-6 mr-3 text-mostaza-300" />
         <h2 className="text-2xl font-bold font-montserrat text-petroleo-500">
           Best Cost Efficiency
         </h2>
