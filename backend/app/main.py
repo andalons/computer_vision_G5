@@ -11,6 +11,7 @@ from fastapi.responses import StreamingResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uuid
+from fastapi.staticfiles import StaticFiles
 
 # Intentar importar del core, si falla usar configuración de respaldo
 try:
@@ -105,6 +106,8 @@ async def lifespan(app: FastAPI):
 
 # Inicializar FastAPI con lifespan
 app = FastAPI(**API_CONFIG, lifespan=lifespan)
+
+app.mount("/screenshots", StaticFiles(directory="runs/debug_frames"), name="screenshots")
 
 # Routers
 app.include_router(db_router)
