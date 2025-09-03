@@ -32,10 +32,11 @@ models/
 *.pickle
 *.pkl
 
-# ---- Logs ----
-*.log
-logs/
-wandb/
+# ---- Vídeos ----
+videos_descargados/
+
+# ---- Screenshots ----
+runs/debug_frames/
 
 # ---- OS Specific ----
 # macOS
@@ -65,3 +66,6 @@ $RECYCLE.BIN/
 # ---- Streamlit/Gradio cache ----
 .streamlit/
 .gradio/
+
+# ---- Node modules ----
+node_modules/
