@@ -9,9 +9,10 @@ const AnalysisResults = ({ videoData, metrics, formData, screenshots, onReset })
   // Transformar screenshots reales o usar placeholder
   const detectionFrames = screenshots?.screenshots ? 
     screenshots.screenshots.map((screenshot, index) => {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
       return {
         id: index + 1,
-        imageUrl: screenshot.replace('runs/debug_frames/', 'http://localhost:8000/screenshots/'),
+        imageUrl: screenshot.replace('runs/debug_frames/', `${API_BASE_URL}/screenshots/`),
         framePath: screenshot
       };
     }) :

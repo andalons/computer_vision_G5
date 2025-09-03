@@ -1,6 +1,9 @@
 # Dockerfile para Frontend (React/Vite)
 FROM node:18-alpine as builder
 
+# Build argument para la URL del backend
+ARG VITE_API_BASE_URL=http://localhost:8000
+
 # Establecer directorio de trabajo
 WORKDIR /app
 
@@ -12,6 +15,9 @@ RUN npm install
 
 # Copiar el código fuente
 COPY . .
+
+# Configurar variable de entorno para el build
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 # Construir la aplicación para producción
 RUN npm run build
