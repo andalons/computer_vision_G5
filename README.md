@@ -81,7 +81,7 @@ LogoTracker Pro resuelve el problema de verificar la presencia de logos en conte
 ---
 
 ## 3. 🏗️ Estructura del Proyecto
-
+```bash
 computer_vision_G5/
 │
 ├── 🐍 backend/               # Backend FastAPI, lógica de análisis y API
@@ -95,11 +95,9 @@ computer_vision_G5/
 │   ├── src/                 # Componentes, páginas y servicios
 │   └── public/              # Recursos estáticos
 │
-├── 🤖 model/                 # Modelos de IA y scripts de inferencia
-├── 📓 notebooks/             # Jupyter Notebooks y prototipos
-├── 📈 reports/               # Informes y resultados              
+├── 🤖 model/                 # Modelos de IA y scripts de inferencia           
 └── README.md
-
+```
 ---
 
 ## 4. 🛠️ Tecnologías Utilizadas
