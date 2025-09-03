@@ -192,7 +192,7 @@ def analyze_video_and_save_metrics(video_id: str):
         if frame_height is None or frame_width is None:
             frame_height, frame_width = frame.shape[:2]
 
-        detections = detector.pred3ct_frame(frame, conf=0.25, iou=0.6)
+        detections = detector.predict_frame(frame, conf=0.25, iou=0.6)
         if detections:
             detections_total.extend(detections)
 
