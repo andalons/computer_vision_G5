@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Download } from 'lucide-react';
+import { Download, BarChart3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 
 const QuickActions = ({ metrics, formData, videoData }) => {
   const [downloadStatus, setDownloadStatus] = useState('');
+  const navigate = useNavigate();
 
   const generatePDF = () => {
     // Verificar que tenemos los datos necesarios
@@ -13,16 +15,16 @@ const QuickActions = ({ metrics, formData, videoData }) => {
 
     const doc = new jsPDF();
     
-    // Calcular métricas ROI con valores por defecto
+    // Calcular métricas de performance con valores por defecto
     const minBrandTime = parseInt(formData.min_brand_time) || 1;
     const totalTime = metrics.total_time_seconds || 0;
     const contractPrice = parseFloat(formData.contract_price) || 0;
     const views = videoData.views || 1;
     const comments = videoData.comments || 1;
     
-    const exposicionEfectiva = (totalTime / minBrandTime) * 100;
-    const roiPorVisualizacion = contractPrice / views;
-    const costePorEngagement = contractPrice / comments;
+    const exposureEffectiveness = (totalTime / minBrandTime) * 100;
+    const costPerView = contractPrice / views;
+    const costPerEngagement = contractPrice / comments;
     const engagementRate = (comments / views) * 100;
     
     // Colores corporativos
@@ -47,7 +49,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setFontSize(16);
     doc.setTextColor(...primaryColor);
     doc.setFont('helvetica', 'normal');
-    doc.text('ROI Analysis Report', 20, yPos);
+    doc.text('Campaign Performance Report', 20, yPos);
     
     // Fecha
     yPos += 10;
@@ -131,7 +133,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     }
     doc.text(complianceText, 20, yPos);
     
-    // Sección de análisis ROI
+    // Sección de análisis de performance
     yPos += 20;
     doc.setFillColor(241, 242, 246);
     doc.rect(15, yPos - 5, 180, 55, 'F');
@@ -139,19 +141,19 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...primaryColor);
-    doc.text('ROI Analysis', 20, yPos + 5);
+    doc.text('Performance Analysis', 20, yPos + 5);
     
     yPos += 20;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...accentColor);
     
-    // Métricas ROI 
-    doc.text(`Exposure Effectiveness: ${Math.min(exposicionEfectiva, 100).toFixed(1)}%`, 20, yPos);
-    doc.text(`Cost per View: €${roiPorVisualizacion.toFixed(3)}`, 110, yPos);
+    // Métricas de performance
+    doc.text(`Exposure Effectiveness: ${Math.min(exposureEffectiveness, 100).toFixed(1)}%`, 20, yPos);
+    doc.text(`Cost per View: €${costPerView.toFixed(3)}`, 110, yPos);
     
     yPos += 12;
-    doc.text(`Cost per Engagement: €${costePorEngagement.toFixed(2)}`, 20, yPos);
+    doc.text(`Cost per Engagement: €${costPerEngagement.toFixed(2)}`, 20, yPos);
     doc.text(`Engagement Rate: ${engagementRate.toFixed(2)}%`, 110, yPos);
     
     // Recomendaciones estratégicas
@@ -172,7 +174,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     // Recomendaciones
     let hasRecommendations = false;
     
-    if (exposicionEfectiva < 70) {
+    if (exposureEffectiveness < 70) {
       hasRecommendations = true;
       doc.setFont('helvetica', 'bold');
       doc.text('Brand Exposure Improvement:', 20, yPos);
@@ -186,7 +188,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       yPos += 15;
     }
     
-    if (costePorEngagement > 5) {
+    if (costPerEngagement > 5) {
       hasRecommendations = true;
       doc.setFont('helvetica', 'bold');
       doc.text('Engagement Optimization:', 20, yPos);
@@ -250,7 +252,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const doc = generatePDF();
-      const fileName = `LogoTracker-ROI-Report-Adidas-${new Date().toISOString().split('T')[0]}.pdf`;
+      const fileName = `LogoTracker-Performance-Report-${new Date().toISOString().split('T')[0]}.pdf`;
       
       doc.save(fileName);
       
@@ -264,6 +266,10 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     }
   };
 
+  const handleViewAllReports = () => {
+    navigate('/reports');
+  };
+
   const getDownloadButtonText = () => {
     switch (downloadStatus) {
       case 'generating':
@@ -273,7 +279,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       case 'error':
         return 'Try Again';
       default:
-        return 'Download ROI Report';
+        return 'Download Report';
     }
   };
 
@@ -306,6 +312,16 @@ const QuickActions = ({ metrics, formData, videoData }) => {
           <div className="flex items-center justify-center space-x-2">
             <Download className={`w-5 h-5 ${downloadStatus === 'generating' ? 'animate-bounce' : ''}`} />
             <span>{getDownloadButtonText()}</span>
+          </div>
+        </button>
+        
+        <button 
+          onClick={handleViewAllReports}
+          className="w-full px-6 py-4 font-semibold transition-all duration-300 border-2 text-petroleo-500 font-montserrat rounded-button border-petroleo-200 hover:bg-petroleo-500 hover:text-white hover:shadow-medium"
+        >
+          <div className="flex items-center justify-center space-x-2">
+            <BarChart3 className="w-5 h-5" />
+            <span>View All Reports</span>
           </div>
         </button>
       </div>

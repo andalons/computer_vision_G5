@@ -1,6 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Upload, Check } from 'lucide-react';
-import { prepareVideo, getStreamUrl, analyzeVideo } from '../../services/AnalysisService';
+import { analyzeVideo } from '../../services/AnalysisService';
 import { saveVideoInfo, getVideoMetrics } from '../../services/DatabaseService';
 
 const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) => {
@@ -29,11 +29,11 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
     setCurrentStep(0);
 
     try {
-      // Paso 1: Uploading
+      // Paso 1: Uploading - Validar y guardar información del video
       setCurrentStep(0);
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Guardar información del video en BD y obtener metadatos
+      console.log('Guardando información del video...');
       const videoResponse = await saveVideoInfo({
         url: formData.url.trim(),
         brand: formData.brand,
@@ -49,24 +49,18 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
       }
 
       const videoId = videoResponse.supabase_record.id;
+      console.log('Video ID obtenido:', videoId);
       
-      // Paso 2: Processing
+      // Paso 2: Processing - Preparación completada (ya se hizo en saveVideoInfo)
       setCurrentStep(1);
       await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Video preparado para análisis');
       
-      // Preparar el video para procesamiento (opcional, depende de tu flujo)
-      try {
-        await prepareVideo({ url: formData.url });
-      } catch (prepareError) {
-        console.warn('Prepare video failed, continuing:', prepareError);
-        // No fallar aquí, continuar con el análisis
-      }
-      
-      // Paso 3: Analyzing 
+      // Paso 3: Analyzing - Ejecutar análisis con YOLO
       setCurrentStep(2);
       console.log('Iniciando análisis con YOLO para video ID:', videoId);
       
-      // Llamar al endpoint que REALMENTE hace el análisis con YOLO
+      // Llamar al endpoint que hace el análisis real con YOLO
       const analysisResult = await analyzeVideo(videoId);
       console.log('Análisis completado:', analysisResult);
       
@@ -75,7 +69,7 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
         throw new Error('El análisis no generó métricas válidas');
       }
 
-      // Ahora obtener las métricas que fueron generadas por el análisis
+      // Obtener las métricas generadas por el análisis
       const realMetrics = await getVideoMetrics(videoId);
       console.log('Métricas obtenidas:', realMetrics);
       
@@ -87,7 +81,7 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
         metricsData = analysisResult.metrics;
       }
 
-      // Verificar compliance del contrato basado únicamente en tiempo
+      // Verificar compliance del contrato basado en tiempo
       const minBrandTime = parseInt(formData.min_brand_time);
       const contractCompliant = (metricsData.total_time_seconds >= minBrandTime);
 
@@ -97,6 +91,8 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
       // Paso 4: Complete
       setCurrentStep(3);
       await new Promise(resolve => setTimeout(resolve, 500));
+      
+      console.log('Análisis completado exitosamente');
       
       // Notificar al componente padre que el análisis está completo
       if (onAnalysisComplete) {
@@ -146,7 +142,7 @@ const StartAnalysisButton = forwardRef(({ formRef, onAnalysisComplete }, ref) =>
         </div>
       )}
 
-      {/* Cargando Modal */}
+      {/* Modal de carga */}
       {isLoading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="max-w-md p-8 mx-4 bg-white rounded-card shadow-strong">
