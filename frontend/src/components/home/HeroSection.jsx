@@ -22,7 +22,7 @@ const HeroSection = () => {
               <span className="text-coral-500"> AI Precision</span>
             </h1>
             <p className="max-w-2xl mb-8 text-xl leading-relaxed font-source text-petroleo-300">
-              Transform manual logo verification from hours to minutes. AI detection for Nike & Adidas with 95%+ accuracy
+            Transform manual logo verification from hours to minutes. AI detection for Nike & Adidas with 98% precision and 93% recall
             </p>
             {/* Botones móviles */}
             <div className="flex flex-col gap-4 sm:flex-row">

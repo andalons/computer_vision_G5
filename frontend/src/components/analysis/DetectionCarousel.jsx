@@ -1,6 +1,27 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+// Función para normalizar nombres de marca
+const normalizeBrandName = (brand) => {
+  if (!brand) return 'Adidas';
+  
+  // Convertir a minúsculas para comparar
+  const lowerBrand = brand.toLowerCase();
+  
+  // Si contiene "adidas" (incluyendo adidas_1, adidas_2, etc.)
+  if (lowerBrand.includes('adidas')) {
+    return 'Adidas';
+  }
+  
+  // Si contiene "nike" (incluyendo nike_1, nike_2, etc.)
+  if (lowerBrand.includes('nike')) {
+    return 'Nike';
+  }
+  
+  // Por defecto, capitalizar la primera letra
+  return brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase();
+};
+
 const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nextFrame, prevFrame, hasRealImages = false, metrics }) => {
   const [imageAspectRatio, setImageAspectRatio] = useState(null);
 
@@ -148,7 +169,7 @@ const DetectionCarousel = ({ detectionFrames, currentFrame, setCurrentFrame, nex
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold font-montserrat text-lila-500">
-              {metrics?.brand || 'Adidas'}
+              {normalizeBrandName(metrics?.brand)}
             </div>
             <div className="text-sm font-source text-petroleo-400">Brand</div>
           </div>

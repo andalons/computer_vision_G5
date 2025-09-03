@@ -1,9 +1,28 @@
 import React, { useState } from 'react';
-import { Download } from 'lucide-react';
+import { Download, BarChart3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
+
+// Función para normalizar nombres de marca 
+const normalizeBrandName = (brand) => {
+  if (!brand) return 'Unknown';
+  
+  const lowerBrand = brand.toLowerCase();
+  
+  if (lowerBrand.includes('adidas')) {
+    return 'Adidas';
+  }
+  
+  if (lowerBrand.includes('nike')) {
+    return 'Nike';
+  }
+  
+  return brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase();
+};
 
 const QuickActions = ({ metrics, formData, videoData }) => {
   const [downloadStatus, setDownloadStatus] = useState('');
+  const navigate = useNavigate();
 
   const generatePDF = () => {
     // Verificar que tenemos los datos necesarios
@@ -13,17 +32,24 @@ const QuickActions = ({ metrics, formData, videoData }) => {
 
     const doc = new jsPDF();
     
-    // Calcular métricas ROI con valores por defecto
+    // Calcular métricas de performance con valores por defecto
     const minBrandTime = parseInt(formData.min_brand_time) || 1;
     const totalTime = metrics.total_time_seconds || 0;
     const contractPrice = parseFloat(formData.contract_price) || 0;
     const views = videoData.views || 1;
-    const comments = videoData.comments || 1;
+    const comments = videoData.comments || 0;
+    const likes = videoData.likes || 0;
     
-    const exposicionEfectiva = (totalTime / minBrandTime) * 100;
-    const roiPorVisualizacion = contractPrice / views;
-    const costePorEngagement = contractPrice / comments;
-    const engagementRate = (comments / views) * 100;
+    // CÁLCULOS ACTUALIZADOS PARA COINCIDIR CON TOPENGAGEMENT
+    const exposureEffectiveness = (totalTime / minBrandTime) * 100;
+    const costPerView = contractPrice / views;
+    const totalEngagement = likes + comments;
+    const engagementRate = views > 0 ? (totalEngagement / views) * 100 : 0;
+    const costPerEngagement = totalEngagement > 0 ? contractPrice / totalEngagement : 0;
+    
+    // Marcas normalizadas
+    const brandRequested = formData.brand || 'Unknown';
+    const brandDetected = normalizeBrandName(metrics?.brand);
     
     // Colores corporativos
     const primaryColor = [44, 62, 80]; 
@@ -47,7 +73,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setFontSize(16);
     doc.setTextColor(...primaryColor);
     doc.setFont('helvetica', 'normal');
-    doc.text('ROI Analysis Report', 20, yPos);
+    doc.text('Campaign Performance Report', 20, yPos);
     
     // Fecha
     yPos += 10;
@@ -78,11 +104,12 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(52, 73, 94);
     
-    doc.text(`Brand Requested: Adidas`, 20, yPos);
+    // DATOS 
+    doc.text(`Brand Requested: ${brandRequested}`, 20, yPos);
     doc.text(`Contract Investment: €${contractPrice}`, 110, yPos);
     
     yPos += 8;
-    doc.text(`Brand Detected: Adidas`, 20, yPos);
+    doc.text(`Brand Detected: ${brandDetected}`, 20, yPos);
     doc.text(`Total Views: ${views.toLocaleString()}`, 110, yPos);
     
     yPos += 8;
@@ -91,6 +118,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     
     yPos += 8;
     doc.text(`Influencer: ${videoData.influencer || 'Not available'}`, 20, yPos);
+    doc.text(`Likes: ${likes.toLocaleString()}`, 110, yPos);
     
     yPos += 8;
     doc.text('Video URL: ', 20, yPos);
@@ -131,30 +159,34 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     }
     doc.text(complianceText, 20, yPos);
     
-    // Sección de análisis ROI
+    // Sección de análisis de performance 
     yPos += 20;
     doc.setFillColor(241, 242, 246);
-    doc.rect(15, yPos - 5, 180, 55, 'F');
+    doc.rect(15, yPos - 5, 180, 65, 'F'); 
     
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...primaryColor);
-    doc.text('ROI Analysis', 20, yPos + 5);
+    doc.text('Performance Analysis', 20, yPos + 5);
     
     yPos += 20;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...accentColor);
     
-    // Métricas ROI 
-    doc.text(`Exposure Effectiveness: ${Math.min(exposicionEfectiva, 100).toFixed(1)}%`, 20, yPos);
-    doc.text(`Cost per View: €${roiPorVisualizacion.toFixed(3)}`, 110, yPos);
+    // Métricas de performance
+    doc.text(`Exposure Effectiveness: ${Math.min(exposureEffectiveness, 100).toFixed(1)}%`, 20, yPos);
+    doc.text(`Cost per View: €${costPerView.toFixed(3)}`, 110, yPos);
     
     yPos += 12;
-    doc.text(`Cost per Engagement: €${costePorEngagement.toFixed(2)}`, 20, yPos);
-    doc.text(`Engagement Rate: ${engagementRate.toFixed(2)}%`, 110, yPos);
+    doc.text(`Engagement Rate: ${engagementRate.toFixed(2)}%`, 20, yPos);
+    doc.text(`Total Engagement: ${totalEngagement.toLocaleString()}`, 110, yPos);
     
-    // Recomendaciones estratégicas
+    yPos += 12;
+    doc.text(`Cost per Engagement: €${costPerEngagement.toFixed(2)}`, 20, yPos);
+    doc.text(`Likes: ${likes.toLocaleString()}`, 110, yPos);
+    
+    // Recomendaciones estratégicas 
     doc.addPage();
     yPos = 30;
     
@@ -169,10 +201,10 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(52, 73, 94);
     
-    // Recomendaciones
+    // Recomendaciones actualizadas
     let hasRecommendations = false;
     
-    if (exposicionEfectiva < 70) {
+    if (exposureEffectiveness < 70) {
       hasRecommendations = true;
       doc.setFont('helvetica', 'bold');
       doc.text('Brand Exposure Improvement:', 20, yPos);
@@ -186,7 +218,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       yPos += 15;
     }
     
-    if (costePorEngagement > 5) {
+    if (engagementRate < 3) { 
       hasRecommendations = true;
       doc.setFont('helvetica', 'bold');
       doc.text('Engagement Optimization:', 20, yPos);
@@ -194,7 +226,21 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       doc.setFont('helvetica', 'normal');
       doc.text('Focus on influencers with higher engagement rates to improve', 25, yPos);
       yPos += 6;
-      doc.text('cost-effectiveness. Current CPE is above industry benchmarks.', 25, yPos);
+      doc.text(`cost-effectiveness. Current rate (${engagementRate.toFixed(1)}%) is below`, 25, yPos);
+      yPos += 6;
+      doc.text('industry benchmarks.', 25, yPos);
+      yPos += 15;
+    }
+    
+    if (costPerEngagement > 0.1) {
+      hasRecommendations = true;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Cost Efficiency:', 20, yPos);
+      yPos += 8;
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Current cost per engagement (€${costPerEngagement.toFixed(2)}) could be`, 25, yPos);
+      yPos += 6;
+      doc.text('optimized through better audience targeting.', 25, yPos);
       yPos += 15;
     }
     
@@ -250,7 +296,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const doc = generatePDF();
-      const fileName = `LogoTracker-ROI-Report-Adidas-${new Date().toISOString().split('T')[0]}.pdf`;
+      const fileName = `LogoTracker-Performance-Report-${new Date().toISOString().split('T')[0]}.pdf`;
       
       doc.save(fileName);
       
@@ -264,6 +310,10 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     }
   };
 
+  const handleViewAllReports = () => {
+    navigate('/reports');
+  };
+
   const getDownloadButtonText = () => {
     switch (downloadStatus) {
       case 'generating':
@@ -273,7 +323,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       case 'error':
         return 'Try Again';
       default:
-        return 'Download ROI Report';
+        return 'Download Report';
     }
   };
 
@@ -306,6 +356,16 @@ const QuickActions = ({ metrics, formData, videoData }) => {
           <div className="flex items-center justify-center space-x-2">
             <Download className={`w-5 h-5 ${downloadStatus === 'generating' ? 'animate-bounce' : ''}`} />
             <span>{getDownloadButtonText()}</span>
+          </div>
+        </button>
+        
+        <button 
+          onClick={handleViewAllReports}
+          className="w-full px-6 py-4 font-semibold transition-all duration-300 border-2 text-petroleo-500 font-montserrat rounded-button border-petroleo-200 hover:bg-petroleo-500 hover:text-white hover:shadow-medium"
+        >
+          <div className="flex items-center justify-center space-x-2">
+            <BarChart3 className="w-5 h-5" />
+            <span>View All Reports</span>
           </div>
         </button>
       </div>
