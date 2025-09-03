@@ -3,6 +3,23 @@ import { Download, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 
+// Función para normalizar nombres de marca 
+const normalizeBrandName = (brand) => {
+  if (!brand) return 'Unknown';
+  
+  const lowerBrand = brand.toLowerCase();
+  
+  if (lowerBrand.includes('adidas')) {
+    return 'Adidas';
+  }
+  
+  if (lowerBrand.includes('nike')) {
+    return 'Nike';
+  }
+  
+  return brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase();
+};
+
 const QuickActions = ({ metrics, formData, videoData }) => {
   const [downloadStatus, setDownloadStatus] = useState('');
   const navigate = useNavigate();
@@ -20,12 +37,19 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     const totalTime = metrics.total_time_seconds || 0;
     const contractPrice = parseFloat(formData.contract_price) || 0;
     const views = videoData.views || 1;
-    const comments = videoData.comments || 1;
+    const comments = videoData.comments || 0;
+    const likes = videoData.likes || 0;
     
+    // CÁLCULOS ACTUALIZADOS PARA COINCIDIR CON TOPENGAGEMENT
     const exposureEffectiveness = (totalTime / minBrandTime) * 100;
     const costPerView = contractPrice / views;
-    const costPerEngagement = contractPrice / comments;
-    const engagementRate = (comments / views) * 100;
+    const totalEngagement = likes + comments;
+    const engagementRate = views > 0 ? (totalEngagement / views) * 100 : 0;
+    const costPerEngagement = totalEngagement > 0 ? contractPrice / totalEngagement : 0;
+    
+    // Marcas normalizadas
+    const brandRequested = formData.brand || 'Unknown';
+    const brandDetected = normalizeBrandName(metrics?.brand);
     
     // Colores corporativos
     const primaryColor = [44, 62, 80]; 
@@ -80,11 +104,12 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(52, 73, 94);
     
-    doc.text(`Brand Requested: Adidas`, 20, yPos);
+    // DATOS 
+    doc.text(`Brand Requested: ${brandRequested}`, 20, yPos);
     doc.text(`Contract Investment: €${contractPrice}`, 110, yPos);
     
     yPos += 8;
-    doc.text(`Brand Detected: Adidas`, 20, yPos);
+    doc.text(`Brand Detected: ${brandDetected}`, 20, yPos);
     doc.text(`Total Views: ${views.toLocaleString()}`, 110, yPos);
     
     yPos += 8;
@@ -93,6 +118,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     
     yPos += 8;
     doc.text(`Influencer: ${videoData.influencer || 'Not available'}`, 20, yPos);
+    doc.text(`Likes: ${likes.toLocaleString()}`, 110, yPos);
     
     yPos += 8;
     doc.text('Video URL: ', 20, yPos);
@@ -133,10 +159,10 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     }
     doc.text(complianceText, 20, yPos);
     
-    // Sección de análisis de performance
+    // Sección de análisis de performance 
     yPos += 20;
     doc.setFillColor(241, 242, 246);
-    doc.rect(15, yPos - 5, 180, 55, 'F');
+    doc.rect(15, yPos - 5, 180, 65, 'F'); 
     
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
@@ -153,10 +179,14 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.text(`Cost per View: €${costPerView.toFixed(3)}`, 110, yPos);
     
     yPos += 12;
-    doc.text(`Cost per Engagement: €${costPerEngagement.toFixed(2)}`, 20, yPos);
-    doc.text(`Engagement Rate: ${engagementRate.toFixed(2)}%`, 110, yPos);
+    doc.text(`Engagement Rate: ${engagementRate.toFixed(2)}%`, 20, yPos);
+    doc.text(`Total Engagement: ${totalEngagement.toLocaleString()}`, 110, yPos);
     
-    // Recomendaciones estratégicas
+    yPos += 12;
+    doc.text(`Cost per Engagement: €${costPerEngagement.toFixed(2)}`, 20, yPos);
+    doc.text(`Likes: ${likes.toLocaleString()}`, 110, yPos);
+    
+    // Recomendaciones estratégicas 
     doc.addPage();
     yPos = 30;
     
@@ -171,7 +201,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(52, 73, 94);
     
-    // Recomendaciones
+    // Recomendaciones actualizadas
     let hasRecommendations = false;
     
     if (exposureEffectiveness < 70) {
@@ -188,7 +218,7 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       yPos += 15;
     }
     
-    if (costPerEngagement > 5) {
+    if (engagementRate < 3) { 
       hasRecommendations = true;
       doc.setFont('helvetica', 'bold');
       doc.text('Engagement Optimization:', 20, yPos);
@@ -196,7 +226,21 @@ const QuickActions = ({ metrics, formData, videoData }) => {
       doc.setFont('helvetica', 'normal');
       doc.text('Focus on influencers with higher engagement rates to improve', 25, yPos);
       yPos += 6;
-      doc.text('cost-effectiveness. Current CPE is above industry benchmarks.', 25, yPos);
+      doc.text(`cost-effectiveness. Current rate (${engagementRate.toFixed(1)}%) is below`, 25, yPos);
+      yPos += 6;
+      doc.text('industry benchmarks.', 25, yPos);
+      yPos += 15;
+    }
+    
+    if (costPerEngagement > 0.1) {
+      hasRecommendations = true;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Cost Efficiency:', 20, yPos);
+      yPos += 8;
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Current cost per engagement (€${costPerEngagement.toFixed(2)}) could be`, 25, yPos);
+      yPos += 6;
+      doc.text('optimized through better audience targeting.', 25, yPos);
       yPos += 15;
     }
     

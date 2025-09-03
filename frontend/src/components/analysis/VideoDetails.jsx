@@ -11,19 +11,27 @@ const VideoDetails = ({ videoData, formData }) => {
           <span className="text-sm font-medium font-source text-petroleo-400">URL:</span>
           <p className="mt-1 text-sm break-all font-source text-petroleo-500">{videoData?.url}</p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 text-center rounded-button bg-coral-500/10">
-            <div className="text-lg font-bold font-montserrat text-coral-500">
-              Adidas
-            </div>
-            <div className="text-xs font-source text-petroleo-400">Target Brand</div>
+        <div className="p-4 text-center rounded-button bg-coral-500/10">
+          <div className="text-lg font-bold font-montserrat text-coral-500">
+            Adidas
           </div>
+          <div className="text-xs font-source text-petroleo-400">Target Brand</div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
           {videoData?.views && (
             <div className="p-4 text-center rounded-button bg-mostaza-500/10">
               <div className="text-lg font-bold font-montserrat text-mostaza-500">
                 {videoData.views.toLocaleString()}
               </div>
               <div className="text-xs font-source text-petroleo-400">Views</div>
+            </div>
+          )}
+          {videoData?.comments && (
+            <div className="p-4 text-center rounded-button bg-lila-500/10">
+              <div className="text-lg font-bold font-montserrat text-lila-500">
+                {videoData.comments.toLocaleString()}
+              </div>
+              <div className="text-xs font-source text-petroleo-400">Comments</div>
             </div>
           )}
         </div>
