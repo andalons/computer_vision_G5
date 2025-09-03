@@ -79,7 +79,7 @@ const Report = () => {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-20 bg-humo-500">
+    <div className="min-h-screen pt-32 pb-20 md:mt-16 bg-humo-500">
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
         
         {/* Header con filtros */}

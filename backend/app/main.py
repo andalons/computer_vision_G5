@@ -107,7 +107,11 @@ async def lifespan(app: FastAPI):
 # Inicializar FastAPI con lifespan
 app = FastAPI(**API_CONFIG, lifespan=lifespan)
 
-app.mount("/screenshots", StaticFiles(directory="runs/debug_frames"), name="screenshots")
+# Crear directorio de screenshots si no existe
+screenshots_dir = "runs/debug_frames"
+os.makedirs(screenshots_dir, exist_ok=True)
+
+app.mount("/screenshots", StaticFiles(directory=screenshots_dir), name="screenshots")
 
 # Routers
 app.include_router(db_router)

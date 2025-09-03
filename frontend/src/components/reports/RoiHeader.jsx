@@ -45,11 +45,11 @@ const RoiHeader = ({ filters, metrics, onFilteredDataChange }) => {
       </div>
       
       {/* Filtros */}
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-col w-full gap-4 lg:flex-row lg:flex-wrap lg:w-auto">
         <select
           value={filters.platform}
           onChange={(e) => applyFilters({...filters, platform: e.target.value})}
-          className="px-4 py-2 border-2 rounded-button border-petroleo-200 font-source text-petroleo-500 focus:outline-none focus:border-coral-500"
+          className="w-full px-4 py-2 border-2 rounded-button border-petroleo-200 font-source text-petroleo-500 focus:outline-none focus:border-coral-500 lg:w-auto"
         >
           <option value="all">All Platforms</option>
           <option value="youtube">YouTube</option>
@@ -59,7 +59,7 @@ const RoiHeader = ({ filters, metrics, onFilteredDataChange }) => {
         <select
           value={filters.compliance}
           onChange={(e) => applyFilters({...filters, compliance: e.target.value})}
-          className="px-4 py-2 border-2 rounded-button border-petroleo-200 font-source text-petroleo-500 focus:outline-none focus:border-coral-500"
+          className="w-full px-4 py-2 border-2 rounded-button border-petroleo-200 font-source text-petroleo-500 focus:outline-none focus:border-coral-500 lg:w-auto"
         >
           <option value="all">All Status</option>
           <option value="compliant">Compliant</option>
@@ -69,7 +69,7 @@ const RoiHeader = ({ filters, metrics, onFilteredDataChange }) => {
         <select
           value={filters.brand}
           onChange={(e) => applyFilters({...filters, brand: e.target.value})}
-          className="px-4 py-2 border-2 rounded-button border-petroleo-200 font-source text-petroleo-500 focus:outline-none focus:border-coral-500"
+          className="w-full px-4 py-2 border-2 rounded-button border-petroleo-200 font-source text-petroleo-500 focus:outline-none focus:border-coral-500 lg:w-auto"
         >
           <option value="all">All Brands</option>
           <option value="Adidas">Adidas</option>

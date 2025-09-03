@@ -56,7 +56,7 @@ const ProblemSolutionSection = () => {
               </div>
               <div className="flex items-center justify-start">
                 <div className="w-3 h-3 mr-3 rounded-full bg-mostaza-500"></div>
-                <span className="text-left font-source text-petroleo-400">95%+ accuracy rate</span>
+                <span className="text-left font-source text-petroleo-400">98% precision rate</span>
               </div>
               <div className="flex items-center justify-start">
                 <div className="w-3 h-3 mr-3 rounded-full bg-mostaza-500"></div>

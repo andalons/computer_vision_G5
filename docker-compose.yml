@@ -1,0 +1,44 @@
+services:
+  # Backend service (FastAPI)
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - YOLO_CONFIG_DIR=/root/.config/Ultralytics
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app/backend
+      - /tmp/downloads:/tmp/downloads
+      - debug_frames:/app/runs/debug_frames
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Frontend service (React/Vite)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+# Opcional: agregar volúmenes para persistencia
+volumes:
+  downloads:
+    driver: local
+  debug_frames:
+    driver: local

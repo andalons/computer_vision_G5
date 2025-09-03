@@ -9,7 +9,7 @@ import CtaSection from '../components/home/CtaSection';
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-humo-500">
+    <div className="min-h-screen md:mt-16 bg-humo-500">
 
       {/* Sección de Hero */}
       <HeroSection />

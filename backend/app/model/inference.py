@@ -11,7 +11,7 @@ class LogoDetector:
         self.model = YOLO(model_path)
         self.class_names = self.model.names  
 
-    def predict_frame(self, frame, conf=0.25, iou=0.6):
+    def predict_frame(self, frame, conf=0.35, iou=0.5, stream_buffer=True):
         """
         Corre predicción YOLO en un frame.
         Devuelve detecciones como lista de dicts.

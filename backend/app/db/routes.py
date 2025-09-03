@@ -4,6 +4,7 @@ API routes for database interaction (videos + metrics + model analysis).
 
 import os
 import cv2
+import glob
 from fastapi import APIRouter, HTTPException
 import time
 
@@ -132,11 +133,25 @@ def analyze_video_and_save_metrics(video_id: str):
     # 1. Check if metrics already exist
     existing_metrics = supabase.table("video_metrics").select("*").eq("video_id", video_id).execute().data
     if existing_metrics:
-        print(f"ℹ️ El video {video_id} ya tenía métricas en Supabase, no se repite el análisis.")
+        print(f"ℹ️ El video {video_id} ya tenía métricas en Supabase, recuperando screenshots...")
+        
+        # NUEVO: Recuperar screenshots existentes
+        screenshot_dir = os.path.join("runs/debug_frames", str(video_id))
+        screenshot_paths = []
+        
+        if os.path.exists(screenshot_dir):
+            # Buscar todos los archivos .jpg que empiecen con "frame"
+            pattern = os.path.join(screenshot_dir, "frame*.jpg")
+            screenshot_files = glob.glob(pattern)
+            # Ordenar por número de frame
+            screenshot_files.sort(key=lambda x: int(x.split('frame')[-1].split('.')[0]))
+            screenshot_paths = screenshot_files
+            print(f"📸 Encontradas {len(screenshot_paths)} imágenes existentes")
+        
         return {
             "message": "ℹ️ Metrics already exist for this video",
             "metrics": existing_metrics,
-            "screenshots": []
+            "screenshots": screenshot_paths  # Ahora retorna las imágenes existentes
         }
 
     # 2. Fetch video

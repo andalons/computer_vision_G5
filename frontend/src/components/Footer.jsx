@@ -7,7 +7,7 @@ const Footer = () => {
   const solutions = [
     { name: 'Brand Detection', path: '#' },
     { name: 'Campaign Analytics', path: '#' },
-    { name: 'ROI Reports', path: '#' },
+    { name: 'Reports', path: '#' },
     { name: 'API Access', path: '#' }
   ];
 
@@ -31,11 +31,11 @@ const Footer = () => {
     <footer className="mt-auto text-white bg-petroleo-500">
       <div className="px-6 py-16 mx-auto max-w-7xl lg:px-8">
         
-        {/* Contenedor principal footer */}
-        <div className="grid grid-cols-1 gap-8 mb-12 lg:grid-cols-5">
+        {/* Contenedor principal footer  */}
+        <div className="flex flex-col mb-12 lg:flex-row lg:justify-between">
           
-          {/* Sección de Logo */}
-          <div className="lg:col-span-2">
+          {/* Sección izquierda  */}
+          <div className="mb-8 lg:mb-0 lg:mr-16"> 
             <Link to="/" className="flex items-center mb-6">
               <h2 className="text-3xl font-bold text-white font-montserrat">
                 LogoTracker
@@ -44,7 +44,7 @@ const Footer = () => {
             </Link>
             
             <p className="max-w-md mb-8 text-lg leading-relaxed text-petroleo-200 font-source">
-              AI-powered logo detection for influencer marketing campaigns. Measure brand exposure with 95%+ accuracy in minutes, not hours.
+              AI-powered logo detection for influencer marketing campaigns. Measure brand exposure with 93% recall in minutes, not hours
             </p>
 
             {/* Logos soportados */}
@@ -63,11 +63,11 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Columna de derecha */}
-          <div className="grid grid-cols-3 gap-4 lg:col-span-3 lg:gap-8">
+          {/* Contenedor de las tres columnas */}
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-3 lg:justify-end md:gap-32">
             
             {/* Columna de soluciones */}
-            <div>
+            <div className="text-left">
               <h3 className="mb-6 text-lg font-semibold text-white font-montserrat">
                 Solutions
               </h3>
@@ -86,7 +86,7 @@ const Footer = () => {
             </div>
 
             {/* Columna de legal */}
-            <div>
+            <div className="text-left">
               <h3 className="mb-6 text-lg font-semibold text-white font-montserrat">
                 Legal
               </h3>
@@ -105,7 +105,7 @@ const Footer = () => {
             </div>
 
             {/* Columna de empresas */}
-            <div>
+            <div className="text-left">
               <h3 className="mb-6 text-lg font-semibold text-white font-montserrat">
                 Enterprise
               </h3>
@@ -131,7 +131,7 @@ const Footer = () => {
           <div className="flex flex-col items-center justify-between gap-6 text-center lg:flex-row lg:text-left">
             <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-8">
               <p className="mb-4 text-sm font-source text-petroleo-200 lg:mb-0">
-                © {currentYear} LogoTracker Pro. Built for agencies who demand precision.
+                © {currentYear} LogoTracker Pro. Built for agencies who demand precision
               </p>
               <div className="flex items-center justify-center space-x-6 text-xs lg:justify-start text-petroleo-300">
                 <Link to="#" className="transition-colors duration-300 hover:text-coral-500">Privacy</Link>
