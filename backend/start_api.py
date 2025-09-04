@@ -18,7 +18,7 @@ def main():
 
     try:
         # Intentar importar la app principal
-        from backend.app.main import app
+        from app.main import app
     except ImportError as e:
         print(f"❌ Error importando la aplicación FastAPI: {e}")
         sys.exit(1)

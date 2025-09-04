@@ -1,6 +1,6 @@
 import cv2
 from ultralytics import YOLO
-from backend.app.model.download_model import get_model_path
+from app.model.download_model import get_model_path
 
 # Variable global del detector
 global_detector = None

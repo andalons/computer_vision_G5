@@ -8,19 +8,14 @@ import glob
 from fastapi import APIRouter, HTTPException
 import time
 
-from backend.app.db.models import VideoMetricCreate, VideoCreate
-from backend.app.db.services import (
-    insert_video,
-    get_all_videos,
-    insert_video_metric,
-    get_metrics_for_video,
-)
-from backend.app.db.utils import extract_video_metadata
-from backend.app.analyze_video import get_complete_video_info
-from backend.app.download_video import download_video
-from backend.app.core.utils import generate_video_path
-from backend.app.model.inference import preload_detector, global_detector
-from backend.app.db.supabase_client import supabase
+from app.db.models import VideoMetricCreate, VideoCreate
+from app.db.services import insert_video, get_all_videos, insert_video_metric, get_metrics_for_video
+from app.db.utils import extract_video_metadata
+from app.analyze_video import get_complete_video_info
+from app.download_video import download_video
+from app.core.utils import generate_video_path
+from app.model.inference import preload_detector, global_detector
+from app.db.supabase_client import supabase
 
 router = APIRouter(prefix="/db", tags=["database"])
 

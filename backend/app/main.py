@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 
 # Intentar importar del core, si falla usar configuración de respaldo
 try:
-    from backend.app.core import (
+    from app.core import (
         core, API_CONFIG, CORS_CONFIG, VideoRequest,
         get_current_video_path, set_current_video_path,
         get_video_info, set_video_info,
@@ -62,11 +62,11 @@ except ImportError as e:
         delay_frames: float = 0.033
         delete_after_processing: bool = True  # Por defecto, eliminar después del procesamiento
 
-from backend.app.download_video import download_video
-from backend.app.analyze_video import get_complete_video_info
-from backend.app.process_local_video import generate_video_stream
-from backend.app.db.routes import router as db_router
-from backend.app.model.inference import preload_detector
+from app.download_video import download_video
+from app.analyze_video import get_complete_video_info
+from app.process_local_video import generate_video_stream
+from app.db.routes import router as db_router
+from app.model.inference import preload_detector
 
 import uuid
 

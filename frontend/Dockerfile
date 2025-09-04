@@ -2,7 +2,7 @@
 FROM node:18-alpine as builder
 
 # Build argument para la URL del backend
-ARG VITE_API_BASE_URL=http://localhost:8000
+ARG VITE_API_BASE_URL=https://deportlogo.onrender.com
 
 # Establecer directorio de trabajo
 WORKDIR /app

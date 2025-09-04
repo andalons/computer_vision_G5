@@ -2,8 +2,8 @@
 Database service layer for videos and metrics
 """
 
-from backend.app.db.supabase_client import supabase
-from backend.app.db.models import VideoCreate, VideoMetricCreate
+from app.db.supabase_client import supabase
+from app.db.models import VideoCreate, VideoMetricCreate
 from typing import List, Optional
 
 def insert_video(video_data: dict):

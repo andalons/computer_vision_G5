@@ -1,5 +1,5 @@
 import cv2
-from backend.app.model.inference import LogoDetector
+from app.model.inference import LogoDetector
 
 def main():
     video_path = "videos_descargados/video_2e7c397a.mp4"

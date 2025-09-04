@@ -1,45 +1,40 @@
-# Dockerfile para Backend (Python/FastAPI)
+# Dockerfile para Backend (Python/FastAPI) - Versión Simplificada
 FROM python:3.11-slim
 
-# Instalar dependencias del sistema necesarias para OpenCV y otras librerías
+# Instalar dependencias del sistema necesarias para OpenCV (versión optimizada)
 RUN apt-get update && apt-get install -y \
+    libgl1-mesa-dev \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender-dev \
     libgomp1 \
-    libglib2.0-0 \
-    libgtk-3-dev \
-    libavcodec-dev \
-    libavformat-dev \
-    libswscale-dev \
-    libgstreamer-plugins-base1.0-dev \
-    libgstreamer1.0-dev \
+    python3-dev \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar archivos de requisitos y instalar dependencias
+# Copiar archivos de requisitos
 COPY requirements.txt ./
-COPY backend/app/requirements.txt ./backend/app/
+# Instalar dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir -r backend/app/requirements.txt
 
 # Copiar el código de la aplicación
-COPY backend/ ./backend/
+COPY . .
 
-# Crear directorio para archivos temporales si no existe
+# Crear directorios necesarios
 RUN mkdir -p /tmp/downloads
-
-# Crear directorios necesarios para la aplicación
 RUN mkdir -p /app/runs/debug_frames
-
-# Crear directorio para configuración de Ultralytics y dar permisos
 RUN mkdir -p /root/.config/Ultralytics && chmod 755 /root/.config/Ultralytics
+
+# Variables de entorno
+ENV PYTHONPATH="/app"
+ENV YOLO_CONFIG_DIR="/tmp"
 
 # Exponer el puerto
 EXPOSE 8000
 
 # Comando para ejecutar la aplicación
-CMD ["python", "backend/start_api.py"]
+CMD ["python", "start_api.py"]

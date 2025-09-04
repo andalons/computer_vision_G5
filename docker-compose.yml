@@ -2,17 +2,16 @@ services:
   # Backend service (FastAPI)
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
       - PYTHONPATH=/app
-      - YOLO_CONFIG_DIR=/root/.config/Ultralytics
+      - YOLO_CONFIG_DIR=/tmp
     env_file:
       - .env
     volumes:
-      - ./backend:/app/backend
       - /tmp/downloads:/tmp/downloads
       - debug_frames:/app/runs/debug_frames
     restart: unless-stopped
@@ -24,6 +23,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:8000
     ports:
       - "3000:80"
     depends_on:
