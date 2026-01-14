@@ -1,5 +1,7 @@
 # En construcción
 
+
+
 ## Propuesta de estructura inicial del proyecto:
 
 ```bash
